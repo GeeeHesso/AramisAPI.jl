@@ -1,0 +1,13 @@
+name = "AramisAPI"
+uuid = "ff0eb7a2-a29c-4fd7-a150-fdeecbc72230"
+authors = ["Marc-Gillioz"]
+version = "1.0.0-DEV"
+
+[compat]
+julia = "1.6.7"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
