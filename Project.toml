@@ -3,6 +3,10 @@ uuid = "ff0eb7a2-a29c-4fd7-a150-fdeecbc72230"
 authors = ["Marc-Gillioz"]
 version = "1.0.0-DEV"
 
+[deps]
+HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
+Oxygen = "df9a0d86-3283-4920-82dc-4555fc0d1d8b"
+
 [compat]
 julia = "1.6.7"
 
