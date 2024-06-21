@@ -6,7 +6,85 @@ info:
 paths:
   /initial_network:
     get:
+      summary: initial grid 
       description: Return the initial grid to be shown at application startup
       responses:
         '200':
-          description: Successfully returned a grid
+          description: JSON file describing the network in PowerModels format
+          content:
+            application/json:
+              schema:
+                type: object
+        '500':
+          description: Internal server error
+  /real_network:
+    post:
+      summary: grid with updated datetime
+      description: Return a JSON file representing the grid with updated datetime
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DateTime'
+      responses:
+        '200':
+          description: JSON file describing the network in PowerModels format
+          content:
+            application/json:
+              schema:
+                type: object
+        '500':
+          description: Internal server error
+  /attacked_network:
+    post:
+      summary: grid with updated datetime and attacks
+      description: Return a JSON file representing the grid with updated datetime and on/off attacks on some generators
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DateTimeAttack'
+      responses:
+        '200':
+          description: JSON file describing the network in PowerModels format
+          content:
+            application/json:
+              schema:
+                type: object
+        '500':
+          description: Internal server error
+components:
+  schemas:
+    DateTime:
+      type: object
+      properties:
+        season:
+          type: string
+          example: winter
+        day:
+          type: string
+          example: weekday
+        hour:
+          type: string
+          example: '10-14h'
+      required:
+        - season
+        - day
+        - hour
+    DateTimeAttack:
+      type: object
+      properties:
+        attacked_gens:
+          type: array
+          items:
+            description: gen_ids
+            type: string
+          example:
+            - '173'
+            - '923'
+      required:
+        - attacked_gens
+      allOf:
+        - $ref: '#/components/schemas/DateTime'
