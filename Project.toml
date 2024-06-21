@@ -6,6 +6,7 @@ version = "1.0.0-DEV"
 [deps]
 HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
 Oxygen = "df9a0d86-3283-4920-82dc-4555fc0d1d8b"
+YAML = "ddb6d928-2868-570f-bddf-ab3f9cf99eb6"
 
 [compat]
 Oxygen = "1"

@@ -1,0 +1,12 @@
+openapi: 3.0.0
+info:
+  title: Aramis API
+  version: 0.0.0
+  description: A Julia API for the Aramis project
+paths:
+  /initial_network:
+    get:
+      description: Return the initial grid to be shown at application startup
+      responses:
+        '200':
+          description: Successfully returned a grid
