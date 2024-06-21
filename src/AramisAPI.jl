@@ -2,14 +2,11 @@ module AramisAPI
 
 using HTTP
 using Oxygen
-
-include("server.jl")
+using YAML
 
 const MODULE_FOLDER = pkgdir(@__MODULE__)
 
-function __init__()
-    global initial_grid = read(joinpath([MODULE_FOLDER, "networks", "initial_grid.json"]), String)
-end
+include("server.jl")
 
 precompile(start_server, ())
 

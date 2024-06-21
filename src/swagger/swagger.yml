@@ -1,0 +1,159 @@
+openapi: 3.0.0
+info:
+  title: Aramis API
+  version: 0.0.0
+  description: A Julia API for the Aramis project
+paths:
+  /initial_network:
+    get:
+      summary: initial grid
+      description: Return the initial grid to be shown at application startup
+      responses:
+        '200':
+          description: JSON describing the network in PowerModels format
+          content:
+            application/json:
+              schema:
+                type: object
+        '500':
+          description: Internal server error
+  /real_network:
+    post:
+      summary: grid with updated datetime
+      description: Return a JSON representing the grid with updated datetime
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DateTime'
+      responses:
+        '200':
+          description: JSON describing the network in PowerModels format
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: invalid season
+        '500':
+          description: Internal server error
+  /attacked_network:
+    post:
+      summary: grid with updated datetime and attacks
+      description: Return a JSON representing the grid with updated datetime and on/off attacks on some generators
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DateTimeAttack'
+      responses:
+        '200':
+          description: JSON describing the network in PowerModels format
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: generator id not found
+        '500':
+          description: Internal server error
+  /algorithms:
+    post:
+      summary: results of detection algorithms
+      description: Return the result of detection algorithms based on a given grid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DateTimeAttackAlgo'
+      responses:
+        '200':
+          description: JSON describing the result of the detection algorithms for several generators
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AlgoResults'
+        '400':
+          description: Bad request
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: algorithm not found
+        '500':
+          description: Internal server error
+components:
+  schemas:
+    DateTime:
+      type: object
+      properties:
+        season:
+          type: string
+          enum: [spring, summer, fall, winter]
+          example: winter
+        day:
+          type: string
+          enum: [weekday, weekend]
+          example: weekday
+        hour:
+          type: string
+          enum: ['22-2h', '2-6h', '6-10h', '10-14h', '14-18h', '18-22h']
+          example: '10-14h'
+      required:
+        - season
+        - day
+        - hour
+    DateTimeAttack:
+      type: object
+      properties:
+        attacked_gens:
+          type: array
+          items:
+            description: gen_ids
+            type: string
+          example:
+            - '173'
+            - '923'
+      required:
+        - attacked_gens
+      allOf:
+        - $ref: '#/components/schemas/DateTime'
+    DateTimeAttackAlgo:
+      type: object
+      properties:
+        algorithms:
+          type: array
+          items:
+            type: string
+          example:
+            - MLPR
+      required:
+        - algorithms
+      allOf:
+        - $ref: '#/components/schemas/DateTimeAttack'
+    AlgoResults:
+      description: algorithm name
+      type: object
+      additionalProperties:
+        description: generator id
+        type: object
+        additionalProperties:
+          description: attack detected
+          type: boolean
+      example:
+        MLPR:
+          '173': true
+          '924': false
