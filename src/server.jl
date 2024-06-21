@@ -33,6 +33,17 @@ function start_server(; port::Int64=8080, host::String="127.0.0.1") :: Nothing
         return response
     end
 
+    # Return the result of detection algorithms based on a given grid
+    @post "/algorithms" function(req::HTTP.Request)
+        # validate data
+        # handle request
+        # response
+        result = read(joinpath([MODULE_FOLDER, "networks", "sample_algo_response.json"]), String)
+        response =  html(result, status=200)
+        HTTP.setheader(response, "content-type" => "application/json; charset=utf-8")
+        return response
+    end
+
     swagger_schema = YAML.load_file(joinpath([MODULE_FOLDER, "src", "swagger", "swagger.yml"]))
     setschema(swagger_schema)
 
