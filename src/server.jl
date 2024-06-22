@@ -5,22 +5,22 @@ function start_server(; port::Int64=8080, host::String="127.0.0.1") :: Nothing
 
     # Return the initial grid to be shown at application startup
     @get "/initial_network" function (req::HTTP.Request)
-        return read(joinpath([MODULE_FOLDER, "networks", "initial_grid.json"]), String)
+        return INITIAL_GRID
     end
 
     # Return the grid with updated datetime
     @post "/real_network" function(req::HTTP.Request, params::Json{DateTime})
-        return read(joinpath([MODULE_FOLDER, "networks", "other_grid.json"]), String)
+        return parse_file(joinpath([MODULE_FOLDER, "networks", "other_grid.json"]))
     end
 
     # Return the grid with updated datetime and on/off attacks on some generators
     @post "/attacked_network" function(req::HTTP.Request, params::Json{DateTimeAttack})
-        return read(joinpath([MODULE_FOLDER, "networks", "other_grid_attacked.json"]), String)
+        return parse_file(joinpath([MODULE_FOLDER, "networks", "other_grid_attacked.json"]))
     end
 
     # Return the result of detection algorithms based on a given grid
     @post "/algorithms" function(req::HTTP.Request, params::Json{DateTimeAttackAlgo})
-        return read(joinpath([MODULE_FOLDER, "networks", "sample_algo_response.json"]), String)
+        return mock_algo_response()
     end
 
     function errorhandler(handle)
@@ -28,16 +28,11 @@ function start_server(; port::Int64=8080, host::String="127.0.0.1") :: Nothing
             try
                 result = handle(req)
                 return HTTP.Response(200, ["content-type" => "application/json; charset=utf-8"],
-                    body=result)
-                return response
+                    body=JSON3.write(result))
             catch error
-                if isa(error, ArgumentError)
-                    return HTTP.Response(400, ["content-type" => "text/plain; charset=utf-8"],
-                        body=error.msg)
-                else
-                    return HTTP.Response(500, ["content-type" => "text/plain; charset=utf-8"],
-                        body=error.msg)
-                end
+                errorcode = isa(error, ArgumentError) ? 400 : 500
+                return HTTP.Response(errorcode, ["content-type" => "text/plain; charset=utf-8"],
+                    body=error.msg)
             end
         end
     end
@@ -46,7 +41,8 @@ function start_server(; port::Int64=8080, host::String="127.0.0.1") :: Nothing
     mergeschema(swagger_schema)
 
     serve(port=port, host=host, middleware=[errorhandler], serialize=false)
-#    serve(port=port, host=host, middleware=[errorhandler], serialize=false, access_log=nothing) # to improve performance
+#    serve(..., access_log=nothing) # to improve performance
+#    serveparallel(...)
 
 #    function CorsMiddleware(handler)
 #        return function (req::HTTP.Request)
