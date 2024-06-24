@@ -1,6 +1,6 @@
 
 const MODULE_FOLDER = pkgdir(@__MODULE__)
-const INITIAL_GRID = parse_file(joinpath([MODULE_FOLDER, "networks", "initial_grid.json"]))
+const INITIAL_GRID = parse_file(joinpath([MODULE_FOLDER, "data", "initial_grid.json"]))
 const SLACK_LOADS = ["1543", "2012", "2018", "2025", "2243", "2287", "2407",
     "2474", "2481", "2498", "3551", "3576", "3595", "3671", "837", "839", "841"]
 
@@ -11,7 +11,7 @@ end
 
 
 function real_network(params::DateTime) :: Dict{String, Any}
-    network = parse_file(joinpath([MODULE_FOLDER, "networks", "other_grid.json"]))
+    network = parse_file(joinpath([MODULE_FOLDER, "data", "other_grid.json"]))
     # network = deepcopy(INITIAL_GRID)
     # TODO: update gens and loads
     powerflow!(network)
@@ -20,7 +20,7 @@ end
 
 
 function attacked_network(params::DateTimeAttack) :: Dict{String, Any}
-    network = parse_file(joinpath([MODULE_FOLDER, "networks", "other_grid.json"]))
+    network = parse_file(joinpath([MODULE_FOLDER, "data", "other_grid.json"]))
     # network = deepcopy(INITIAL_GRID)
     # TODO: update gens and loads
     attack!(network, params.attacked_gens)
