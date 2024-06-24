@@ -1,6 +1,7 @@
 using AramisAPI
 using Test
 
+
 function test_valid_network(network)
     @test isa(network, Dict{String, Any})
     for feature in ["name", "branch", "bus", "gen", "load"]
@@ -13,6 +14,7 @@ function test_valid_network(network)
     @test isa(network["load"], Dict{String, Any})
 end
 
+
 function test_identical_network_structure(net1, net2)
     @test issetequal(keys(net1["bus"]), keys(net2["bus"]))
     @test issetequal(keys(net1["branch"]), keys(net2["branch"]))
@@ -20,19 +22,23 @@ function test_identical_network_structure(net1, net2)
     @test issetequal(keys(net1["load"]), keys(net2["load"]))
 end
 
+
 function equal_gens(net1, net2; exclude::Vector{String} = String[])
     gens = setdiff(keys(net1["gen"]), exclude)
     all(net1["gen"][id]["pg"] == net2["gen"][id]["pg"] for id in gens)
 end
+
 
 function equal_loads(net1, net2; exclude::Vector{String} = String[])
     loads = setdiff(keys(net1["load"]), exclude)
     all(net1["load"][id]["pd"] == net2["load"][id]["pd"] for id in loads)
 end
 
+
 function equal_flows(net1, net2)
     all(net1["branch"][id]["pt"] == net2["branch"][id]["pt"] for id in keys(net1["branch"]))
 end
+
 
 @testset "AramisAPI.jl" begin
 

@@ -24,11 +24,13 @@ const ATTACKABLE_GENS = [
 
 const ALGORITHMS = ["MLPR"]
 
+
 struct DateTime
     season::String
     day::String
     hour::String
 end
+
 
 struct DateTimeAttack
     season::String
@@ -36,6 +38,7 @@ struct DateTimeAttack
     hour::String
     attacked_gens::Vector{String}
 end
+
 
 struct DateTimeAttackAlgo
     season::String
