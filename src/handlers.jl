@@ -1,6 +1,8 @@
 
 const MODULE_FOLDER = pkgdir(@__MODULE__)
 const INITIAL_GRID = parse_file(joinpath([MODULE_FOLDER, "networks", "initial_grid.json"]))
+const SLACK_LOADS = ["1543", "2012", "2018", "2025", "2243", "2287", "2407",
+    "2474", "2481", "2498", "3551", "3576", "3595", "3671", "837", "839", "841"]
 
 
 function initial_network() :: Dict{String, Any}
@@ -9,7 +11,6 @@ end
 
 
 function real_network(params::DateTime) :: Dict{String, Any}
-    println("test")
     grid = parse_file(joinpath([MODULE_FOLDER, "networks", "other_grid.json"]))
     # TODO: grid = deepcopy(INITIAL_GRID)
     # TODO: update gens, loads, and lines (with or without Power Flow?)
