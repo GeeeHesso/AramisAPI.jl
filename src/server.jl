@@ -18,7 +18,7 @@ function start_server(; port::Int64=8080, host::String="127.0.0.1") :: Nothing
     @post "/algorithms" (req::HTTP.Request,
         params::Json{DateTimeAttackAlgo}) -> algorithms(params.payload)
 
-    swagger_schema = YAML.load_file(joinpath([MODULE_FOLDER, "src", "swagger", "swagger.yml"]))
+    swagger_schema = YAML.load_file(joinpath([MODULE_FOLDER, "src", "swagger.yml"]))
     mergeschema(swagger_schema)
 
     serve(port=port, host=host, middleware=[errorhandler], serialize=false)

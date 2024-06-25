@@ -42,7 +42,7 @@ end
 
 @testset "AramisAPI.jl" begin
 
-    @testset "test_DateTime_validator" begin
+    @testset "Validator: DateTime" begin
         # test all valid parameters
         for season in ["spring", "summer", "fall", "winter"]
             for day in ["weekday", "weekend"]
@@ -63,7 +63,7 @@ end
         end
     end
 
-    @testset "test_DateTimeAttack_validator" begin
+    @testset "Validator: DateTimeAttack" begin
         # test valid parameters
         param = AramisAPI.DateTimeAttack("spring", "weekend", "22-2h", ["918", "932"])
         @test AramisAPI.validate(param)
@@ -82,7 +82,7 @@ end
         @test AramisAPI.validate(param) == false
     end
 
-    @testset "test_DateTimeAttackAlgo_validator" begin
+    @testset "Validator: DateTimeAttackAlgo" begin
         # test valid parameters
         param = AramisAPI.DateTimeAttackAlgo("spring", "weekend", "22-2h", ["918", "932"], ["MLPR"])
         @test AramisAPI.validate(param)
@@ -101,12 +101,36 @@ end
         @test AramisAPI.validate(param) == false
     end
 
-    @testset "test_initial_network_handler" begin
+    @testset "Handlers: data" begin
+        n_gens = length(AramisAPI.INITIAL_GRID["gen"])
+        n_loads = length(AramisAPI.INITIAL_GRID["load"])
+        n_timesteps = (length(AramisAPI.SEASONS)
+            * length(AramisAPI.DAYS) * length(AramisAPI.HOURS))
+        @test size(AramisAPI.GENS) == (n_gens, n_timesteps)
+        @test size(AramisAPI.LOADS) == (n_loads, n_timesteps)
+    end
+
+    @testset "Handlers: update_injections" begin
+        # first day of the year
+        net1 = deepcopy(AramisAPI.INITIAL_GRID)
+        AramisAPI.update_injections!(net1, AramisAPI.DateTime("winter", "weekday", "22-2h"))
+        test_valid_network(net1)
+        # last day of the year
+        net2 = deepcopy(AramisAPI.INITIAL_GRID)
+        AramisAPI.update_injections!(net2, AramisAPI.DateTime("fall", "weekend", "18-22h"))
+        test_valid_network(net2)
+        # check that they are distinct
+        test_identical_network_structure(net1, net2)
+        @test equal_gens(net1, net2) == false
+        @test equal_loads(net1, net2) == false
+    end
+
+    @testset "Handlers: initial_network" begin
         network = AramisAPI.initial_network()
         test_valid_network(network)
     end
 
-    @testset "test_real_network_handler" begin
+    @testset "Handlers: real_network" begin
         param = AramisAPI.DateTime("fall", "weekday", "10-14h")
         network = AramisAPI.real_network(param)
         test_valid_network(network)
@@ -119,7 +143,7 @@ end
         @test equal_flows(network, reference_net) == false
     end
 
-    @testset "test_attacked_network_handler" begin
+    @testset "Handlers: attacked_network" begin
         attacked_gens = ["918", "931"]
         param = AramisAPI.DateTimeAttack("summer", "weekend", "18-22h", attacked_gens)
         network = AramisAPI.attacked_network(param)

@@ -1,8 +1,14 @@
 
 const MODULE_FOLDER = pkgdir(@__MODULE__)
+
 const INITIAL_GRID = parse_file(joinpath([MODULE_FOLDER, "data", "initial_grid.json"]))
-const SLACK_LOADS = ["1543", "2012", "2018", "2025", "2243", "2287", "2407",
-    "2474", "2481", "2498", "3551", "3576", "3595", "3671", "837", "839", "841"]
+const GEN_IDS = string.(sort(parse.(Int, keys(INITIAL_GRID["gen"]))))
+const LOAD_IDS = string.(sort(parse.(Int, keys(INITIAL_GRID["load"]))))
+const SLACK_LOADS = ["2653", "2655", "2657", "4295", "4788", "4794", "4801", "5024",
+    "5069", "5191", "5259", "5266", "5284", "7253", "7325", "7355", "7460"]
+
+const GENS = DataDrop.retrieve_matrix(joinpath([MODULE_FOLDER, "data", "gens.h5"]))
+const LOADS = DataDrop.retrieve_matrix(joinpath([MODULE_FOLDER, "data", "loads.h5"]))
 
 
 function initial_network() :: Dict{String, Any}
@@ -11,18 +17,16 @@ end
 
 
 function real_network(params::DateTime) :: Dict{String, Any}
-    network = parse_file(joinpath([MODULE_FOLDER, "data", "other_grid.json"]))
-    # network = deepcopy(INITIAL_GRID)
-    # TODO: update gens and loads
+    network = deepcopy(INITIAL_GRID)
+    update_injections!(network, params)
     powerflow!(network)
     return network
 end
 
 
 function attacked_network(params::DateTimeAttack) :: Dict{String, Any}
-    network = parse_file(joinpath([MODULE_FOLDER, "data", "other_grid.json"]))
-    # network = deepcopy(INITIAL_GRID)
-    # TODO: update gens and loads
+    network = deepcopy(INITIAL_GRID)
+    update_injections!(network, params)
     attack!(network, params.attacked_gens)
     powerflow!(network)
     return network
@@ -49,6 +53,23 @@ function algorithms(params::DateTimeAttackAlgo) :: Dict{String, Any}
 end
 
 
+function update_injections!(network::Dict{String, Any},
+        datetime::Union{DateTime, DateTimeAttack, DateTimeAttackAlgo})
+    t = (
+        12 * SEASONS[datetime.season]
+        + 6 * DAYS[datetime.day]
+        + HOURS[datetime.hour] + 1
+        )
+    for (i, load_id) ∈ enumerate(LOAD_IDS)
+        network["load"][load_id]["pd"] = LOADS[i, t]
+    end
+    for (i, gen_id) ∈ enumerate(GEN_IDS)
+        network["gen"][gen_id]["pg"] = GENS[i, t]
+    end
+    nothing
+end
+
+
 function attack!(network::Dict{String, Any}, gen_id::String)
     # identify the attacked generator
     gen = network["gen"][gen_id]
@@ -58,7 +79,7 @@ function attack!(network::Dict{String, Any}, gen_id::String)
     p_after = p_before < p_max / 2 ? p_max : 0.0
     gen["pg"] = p_after
     # distribute the change onto the slack loads so that the power balance is respected
-    p_diff = p_after - p_before / length(SLACK_LOADS)
+    p_diff = (p_after - p_before) / length(SLACK_LOADS)
     for load_id in SLACK_LOADS
         network["load"][load_id]["pd"] += p_diff
     end

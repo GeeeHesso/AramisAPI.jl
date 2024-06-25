@@ -2,12 +2,12 @@ const SEASONS = Dict(
     "spring" => 1,
     "summer" => 2,
     "fall" => 3,
-    "winter" => 4
+    "winter" => 0
 )
 
 const DAYS = Dict(
-    "weekday" => 1,
-    "weekend" => 2
+    "weekday" => 0,
+    "weekend" => 1
 )
 
 const HOURS = Dict(
@@ -16,7 +16,7 @@ const HOURS = Dict(
     "10-14h" => 3,
     "14-18h" => 4,
     "18-22h" => 5,
-    "22-2h" => 6
+    "22-2h" => 0
 )
 
 const ATTACKABLE_GENS = [
