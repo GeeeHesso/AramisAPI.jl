@@ -2,7 +2,7 @@ module AramisAPI
 
 using HTTP
 using Oxygen
-using JSON3
+using JSON
 using YAML
 using PowerModels
 using DataDrop

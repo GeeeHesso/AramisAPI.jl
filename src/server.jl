@@ -44,7 +44,7 @@ function errorhandler(handle)
         try
             result = handle(req)
             return HTTP.Response(200, ["content-type" => "application/json; charset=utf-8"],
-                body=JSON3.write(result))
+                body=JSON.json(result))
         catch error
             errorcode = isa(error, ArgumentError) ? 400 : 500
             return HTTP.Response(errorcode, ["content-type" => "text/plain; charset=utf-8"],

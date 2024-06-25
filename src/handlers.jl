@@ -86,6 +86,7 @@ function attack!(network::Dict{String, Any}, gen_id::String)
     nothing
 end
 
+
 function attack!(network::Dict{String, Any}, gen_ids::Vector{String})
     for gen_id in gen_ids
         attack!(network, gen_id)
