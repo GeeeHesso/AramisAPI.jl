@@ -97,7 +97,7 @@ end
 function powerflow!(network::Dict{String, Any})
     pf = compute_dc_pf(network)
     update_data!(network, pf["solution"])
-    flows = calc_branch_flow_ac(network)
+    flows = calc_branch_flow_dc(network)
     update_data!(network, flows)
     nothing
 end
