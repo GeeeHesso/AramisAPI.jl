@@ -40,6 +40,13 @@ function equal_flows(net1, net2)
 end
 
 
+function test_power_balance(network)
+    production = sum(gen["pg"] for gen in values(network["gen"]))
+    consumption = sum(load["pd"] for load in values(network["load"]))
+    @test abs(production / consumption - 1.0) < 1e-6
+end
+
+
 @testset "AramisAPI.jl" begin
 
     @testset "Validator: DateTime" begin
@@ -102,6 +109,7 @@ end
     end
 
     @testset "Handlers: data" begin
+        test_power_balance(AramisAPI.INITIAL_GRID)
         n_gens = length(AramisAPI.INITIAL_GRID["gen"])
         n_loads = length(AramisAPI.INITIAL_GRID["load"])
         n_timesteps = (length(AramisAPI.SEASONS)
@@ -134,6 +142,7 @@ end
         param = AramisAPI.DateTime("fall", "weekday", "10-14h")
         network = AramisAPI.real_network(param)
         test_valid_network(network)
+        test_power_balance(network)
         # check that the network structure is the same as the initial netork
         reference_net = AramisAPI.INITIAL_GRID
         test_identical_network_structure(network, reference_net)
@@ -148,6 +157,7 @@ end
         param = AramisAPI.DateTimeAttack("summer", "weekend", "18-22h", attacked_gens)
         network = AramisAPI.attacked_network(param)
         test_valid_network(network)
+        test_power_balance(network)
         # check that the network structure is the same as without attacks
         reference_param = AramisAPI.DateTime(param.season, param.day, param.hour)
         reference_net = AramisAPI.real_network(reference_param)
