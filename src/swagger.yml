@@ -129,6 +129,7 @@ components:
             type: string
           example:
             - MLPR
+            - NBC
     AlgoResults:
       description: algorithm name
       type: object
