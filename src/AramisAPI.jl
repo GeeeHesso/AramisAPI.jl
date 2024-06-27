@@ -6,10 +6,12 @@ using JSON
 using YAML
 using PowerModels
 using DataDrop
+using PyCall
 
 include("dto.jl")
 include("validators.jl")
 include("handlers.jl")
+include("algorithms.jl")
 include("server.jl")
 
 end

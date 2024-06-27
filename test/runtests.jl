@@ -1,6 +1,8 @@
 using AramisAPI
 using Test
 
+# some tests are skipped if the conda environment is not installed
+conda_env_missing = !isdir(joinpath([pkgdir(AramisAPI), "conda"]))
 
 function test_valid_network(network)
     @test isa(network, Dict{String, Any})
@@ -171,4 +173,7 @@ end
         @test equal_flows(network, reference_net) == false
     end
 
+    @testset "Setup: check PyCall environment" begin
+        @test AramisAPI.get_python_version()[1:2] == (3, 7) skip=conda_env_missing
+    end
 end
