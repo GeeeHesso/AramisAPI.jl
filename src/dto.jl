@@ -22,7 +22,7 @@ const HOURS = Dict(
 const ATTACKABLE_GENS = [
     "173", "915", "918", "923", "924", "927", "931", "932", "933", "934"]
 
-const ALGORITHMS = ["MLPR"]
+const ALGORITHMS = ["NBC", "MLPR"]
 
 
 struct DateTime

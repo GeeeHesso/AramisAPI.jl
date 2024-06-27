@@ -48,6 +48,18 @@ function algorithms(params::DateTimeAttackAlgo) :: Dict{String, Any}
             "931" => false,
             "915" => false,
             "927" => false
+        ),
+        "NBC" => Dict(
+            "923" => false,
+            "918" => false,
+            "933" => false,
+            "934" => false,
+            "173" => true,
+            "932" => false,
+            "924" => false,
+            "931" => false,
+            "915" => false,
+            "927" => false
         )
     )
 end
