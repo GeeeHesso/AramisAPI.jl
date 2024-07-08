@@ -122,14 +122,36 @@ end
         @test size(AramisAPI.LOADS) == (n_loads, n_timesteps)
     end
 
+    @testset "Handlers: get timestep" begin
+        # first timestep of the year
+        datetimes = [
+            AramisAPI.DateTime("winter", "weekday", "22-2h"),
+            AramisAPI.DateTimeAttack("winter", "weekday", "22-2h", ["918"]),
+            AramisAPI.DateTimeAttackAlgo("winter", "weekday", "22-2h", ["918"], ["MLPR"])
+        ]
+        for datetime in datetimes
+            @test AramisAPI.get_timestep(datetime) == 1
+        end
+        # last timestep of the year
+        datetimes = [
+            AramisAPI.DateTime("fall", "weekend", "18-22h"),
+            AramisAPI.DateTimeAttack("fall", "weekend", "18-22h", ["918"]),
+            AramisAPI.DateTimeAttackAlgo("fall", "weekend", "18-22h", ["918"], ["MLPR"]),
+        ]
+        T = size(AramisAPI.LOADS, 2)
+        for datetime in datetimes
+            @test AramisAPI.get_timestep(datetime) == T
+        end
+    end
+
     @testset "Handlers: update_injections" begin
         # first day of the year
         net1 = deepcopy(AramisAPI.INITIAL_GRID)
-        AramisAPI.update_injections!(net1, AramisAPI.DateTime("winter", "weekday", "22-2h"))
+        AramisAPI.update_injections!(net1, 1)
         test_valid_network(net1)
-        # last day of the year
+        # second day of the year
         net2 = deepcopy(AramisAPI.INITIAL_GRID)
-        AramisAPI.update_injections!(net2, AramisAPI.DateTime("fall", "weekend", "18-22h"))
+        AramisAPI.update_injections!(net2, 2)
         test_valid_network(net2)
         # check that they are distinct
         test_identical_network_structure(net1, net2)

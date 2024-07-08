@@ -20,7 +20,8 @@ end
 
 function real_network(params::DateTime) :: Dict{String, Any}
     network = deepcopy(INITIAL_GRID)
-    update_injections!(network, params)
+    t = get_timestep(params)
+    update_injections!(network, t)
     powerflow!(network)
     return network
 end
@@ -28,7 +29,8 @@ end
 
 function attacked_network(params::DateTimeAttack) :: Dict{String, Any}
     network = deepcopy(INITIAL_GRID)
-    update_injections!(network, params)
+    t = get_timestep(params)
+    update_injections!(network, t)
     attack!(network, params.attacked_gens)
     powerflow!(network)
     return network
@@ -67,13 +69,12 @@ function algorithms(params::DateTimeAttackAlgo) :: Dict{String, Any}
 end
 
 
-function update_injections!(network::Dict{String, Any},
-        datetime::Union{DateTime, DateTimeAttack, DateTimeAttackAlgo})
-    t = (
-        12 * SEASONS[datetime.season]
-        + 6 * DAYS[datetime.day]
-        + HOURS[datetime.hour] + 1
-        )
+function get_timestep(datetime::Union{DateTime, DateTimeAttack, DateTimeAttackAlgo})
+    12 * SEASONS[datetime.season] + 6 * DAYS[datetime.day] + HOURS[datetime.hour] + 1
+end
+
+
+function update_injections!(network::Dict{String, Any}, t::Int)
     for (i, load_id) ∈ enumerate(LOAD_IDS)
         network["load"][load_id]["pd"] = LOADS[i, t]
     end
