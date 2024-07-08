@@ -2,8 +2,10 @@
 const MODULE_FOLDER = pkgdir(@__MODULE__)
 
 const INITIAL_GRID = parse_file(joinpath([MODULE_FOLDER, "data", "initial_grid.json"]))
-const GEN_IDS = string.(sort(parse.(Int, keys(INITIAL_GRID["gen"]))))
-const LOAD_IDS = string.(sort(parse.(Int, keys(INITIAL_GRID["load"]))))
+const GEN_IDS = string.(CSV.read(joinpath([MODULE_FOLDER, "data", "gen_ids.csv"]),
+    CSV.Tables.matrix, header=false)[:, 1])
+const LOAD_IDS = string.(CSV.read(joinpath([MODULE_FOLDER, "data", "load_ids.csv"]),
+    CSV.Tables.matrix, header=false)[:, 1])
 const SLACK_LOADS = ["2653", "2655", "2657", "4295", "4788", "4794", "4801", "5024",
     "5069", "5191", "5259", "5266", "5284", "7253", "7325", "7355", "7460"]
 

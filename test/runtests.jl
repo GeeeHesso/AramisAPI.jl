@@ -112,6 +112,8 @@ end
 
     @testset "Handlers: data" begin
         test_power_balance(AramisAPI.INITIAL_GRID)
+        @test issetequal(keys(AramisAPI.INITIAL_GRID["gen"]), AramisAPI.GEN_IDS)
+        @test issetequal(keys(AramisAPI.INITIAL_GRID["load"]), AramisAPI.LOAD_IDS)
         n_gens = length(AramisAPI.INITIAL_GRID["gen"])
         n_loads = length(AramisAPI.INITIAL_GRID["load"])
         n_timesteps = (length(AramisAPI.SEASONS)
