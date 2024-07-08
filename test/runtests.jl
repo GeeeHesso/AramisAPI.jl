@@ -176,6 +176,6 @@ end
     end
 
     @testset "Setup: check PyCall environment" begin
-        @test AramisAPI.get_python_version()[1:2] == (3, 7) skip=conda_env_missing
+        @test AramisAPI.check_python_version() skip=conda_env_missing
     end
 end
