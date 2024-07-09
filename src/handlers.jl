@@ -12,7 +12,6 @@ const SLACK_LOADS = ["2653", "2655", "2657", "4295", "4788", "4794", "4801", "50
 const GENS = DataDrop.retrieve_matrix(joinpath([MODULE_FOLDER, "data", "gens.h5"]))
 const LOADS = DataDrop.retrieve_matrix(joinpath([MODULE_FOLDER, "data", "loads.h5"]))
 
-
 function initial_network() :: Dict{String, Any}
     return INITIAL_GRID
 end
@@ -38,34 +37,14 @@ end
 
 
 function algorithms(params::DateTimeAttackAlgo) :: Dict{String, Any}
-    # TODO: implement
-    # return mock
-    return Dict(
-        "MLPR" => Dict(
-            "923" => true,
-            "918" => false,
-            "933" => false,
-            "934" => false,
-            "173" => false,
-            "932" => false,
-            "924" => false,
-            "931" => false,
-            "915" => false,
-            "927" => false
-        ),
-        "NBC" => Dict(
-            "923" => false,
-            "918" => false,
-            "933" => false,
-            "934" => false,
-            "173" => true,
-            "932" => false,
-            "924" => false,
-            "931" => false,
-            "915" => false,
-            "927" => false
-        )
-    )
+    network = deepcopy(INITIAL_GRID)
+    t = get_timestep(params)
+    update_injections!(network, t)
+    attack!(network, params.attacked_gens)
+    x = [network["gen"][id]["pg"] for id in GEN_IDS]
+    return Dict(algo => Dict(gen => run_classifier(algo, gen, x) for gen in ATTACKABLE_GENS)
+        for algo in intersect(params.algorithms, keys(ALGORITHM_DIR)))
+    # TODO: add support for all algorithms
 end
 
 

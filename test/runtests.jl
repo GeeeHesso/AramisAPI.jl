@@ -49,6 +49,14 @@ function test_power_balance(network)
 end
 
 
+function check_algorithm_results(result, algorithms)
+    return (issetequal(keys(result), algorithms) &&
+        all([issetequal(keys(result[algo]), AramisAPI.ATTACKABLE_GENS)
+            for algo in algorithms]))
+end
+
+
+
 @testset "AramisAPI.jl" begin
 
     @testset "Validator: DateTime" begin
@@ -197,7 +205,29 @@ end
         @test equal_flows(network, reference_net) == false
     end
 
-    @testset "Setup: check PyCall environment" begin
+    @testset "Handlers: algorithms" begin
+        attacked_gens = ["927", "915", "933"]
+        algorithms = ["NBC", "KNNC"]
+        param = AramisAPI.DateTimeAttackAlgo("spring", "weekend", "14-18h",
+            attacked_gens, algorithms)
+        @test check_algorithm_results(AramisAPI.algorithms(param),
+            algorithms) skip=conda_env_missing
+    end
+
+    @testset "Algorithms: run classifier" begin
+        # run all classifiers for all time steps
+        T = size(AramisAPI.GENS, 2)
+        for algorithm in keys(AramisAPI.ALGORITHM_DIR)
+            for gen in AramisAPI.ATTACKABLE_GENS
+                for t = 1:T
+                    @test AramisAPI.run_classifier(algorithm, gen,
+                        AramisAPI.GENS[:, t]) == false skip=conda_env_missing
+                end
+            end
+        end
+    end
+
+    @testset "Algorithms: check PyCall environment" begin
         @test AramisAPI.check_python_version() skip=conda_env_missing
     end
 end

@@ -130,6 +130,7 @@ components:
           example:
             - MLPR
             - NBC
+            - KNNC
     AlgoResults:
       description: algorithm name
       type: object
