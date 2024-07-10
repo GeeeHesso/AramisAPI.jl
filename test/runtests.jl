@@ -1,6 +1,8 @@
 using AramisAPI
 using Test
 
+# some tests are skipped if the conda environment is not installed
+conda_env_missing = !isdir(joinpath([pkgdir(AramisAPI), "conda"]))
 
 function test_valid_network(network)
     @test isa(network, Dict{String, Any})
@@ -47,6 +49,14 @@ function test_power_balance(network)
 end
 
 
+function check_algorithm_results(result, algorithms)
+    return (issetequal(keys(result), algorithms) &&
+        all([issetequal(keys(result[algo]), AramisAPI.ATTACKABLE_GENS)
+            for algo in algorithms]))
+end
+
+
+
 @testset "AramisAPI.jl" begin
 
     @testset "Validator: DateTime" begin
@@ -91,7 +101,7 @@ end
 
     @testset "Validator: DateTimeAttackAlgo" begin
         # test valid parameters
-        param = AramisAPI.DateTimeAttackAlgo("spring", "weekend", "22-2h", ["918", "932"], ["MLPR"])
+        param = AramisAPI.DateTimeAttackAlgo("spring", "weekend", "22-2h", ["918", "932"], ["MLPC"])
         @test AramisAPI.validate(param)
         # test success with empty list of algorithms
         param = AramisAPI.DateTimeAttackAlgo("spring", "weekend", "22-2h", ["918", "932"], [])
@@ -100,16 +110,18 @@ end
         param = AramisAPI.DateTimeAttackAlgo("spring", "weekend", "22-2h", ["918", "932"], ["random"])
         @test AramisAPI.validate(param) == false
         # check failure with invalid date-time
-        param = AramisAPI.DateTimeAttackAlgo("x", "weekend", "22-2h", ["918", "932"], ["MLPR"])
+        param = AramisAPI.DateTimeAttackAlgo("x", "weekend", "22-2h", ["918", "932"], ["MLPC"])
         @test AramisAPI.validate(param) == false
-        param = AramisAPI.DateTimeAttackAlgo("spring", "x", "22-2h", ["918", "932"], ["MLPR"])
+        param = AramisAPI.DateTimeAttackAlgo("spring", "x", "22-2h", ["918", "932"], ["MLPC"])
         @test AramisAPI.validate(param) == false
-        param = AramisAPI.DateTimeAttackAlgo("spring", "weekend", "x", ["918", "932"], ["MLPR"])
+        param = AramisAPI.DateTimeAttackAlgo("spring", "weekend", "x", ["918", "932"], ["MLPC"])
         @test AramisAPI.validate(param) == false
     end
 
     @testset "Handlers: data" begin
         test_power_balance(AramisAPI.INITIAL_GRID)
+        @test issetequal(keys(AramisAPI.INITIAL_GRID["gen"]), AramisAPI.GEN_IDS)
+        @test issetequal(keys(AramisAPI.INITIAL_GRID["load"]), AramisAPI.LOAD_IDS)
         n_gens = length(AramisAPI.INITIAL_GRID["gen"])
         n_loads = length(AramisAPI.INITIAL_GRID["load"])
         n_timesteps = (length(AramisAPI.SEASONS)
@@ -118,14 +130,36 @@ end
         @test size(AramisAPI.LOADS) == (n_loads, n_timesteps)
     end
 
+    @testset "Handlers: get timestep" begin
+        # first timestep of the year
+        datetimes = [
+            AramisAPI.DateTime("winter", "weekday", "22-2h"),
+            AramisAPI.DateTimeAttack("winter", "weekday", "22-2h", ["918"]),
+            AramisAPI.DateTimeAttackAlgo("winter", "weekday", "22-2h", ["918"], ["MLPR"])
+        ]
+        for datetime in datetimes
+            @test AramisAPI.get_timestep(datetime) == 1
+        end
+        # last timestep of the year
+        datetimes = [
+            AramisAPI.DateTime("fall", "weekend", "18-22h"),
+            AramisAPI.DateTimeAttack("fall", "weekend", "18-22h", ["918"]),
+            AramisAPI.DateTimeAttackAlgo("fall", "weekend", "18-22h", ["918"], ["MLPR"]),
+        ]
+        T = size(AramisAPI.LOADS, 2)
+        for datetime in datetimes
+            @test AramisAPI.get_timestep(datetime) == T
+        end
+    end
+
     @testset "Handlers: update_injections" begin
         # first day of the year
         net1 = deepcopy(AramisAPI.INITIAL_GRID)
-        AramisAPI.update_injections!(net1, AramisAPI.DateTime("winter", "weekday", "22-2h"))
+        AramisAPI.update_injections!(net1, 1)
         test_valid_network(net1)
-        # last day of the year
+        # second day of the year
         net2 = deepcopy(AramisAPI.INITIAL_GRID)
-        AramisAPI.update_injections!(net2, AramisAPI.DateTime("fall", "weekend", "18-22h"))
+        AramisAPI.update_injections!(net2, 2)
         test_valid_network(net2)
         # check that they are distinct
         test_identical_network_structure(net1, net2)
@@ -171,4 +205,31 @@ end
         @test equal_flows(network, reference_net) == false
     end
 
+    @testset "Handlers: algorithms" begin
+        attacked_gens = ["927", "915", "933"]
+        algorithms = ["NBC", "KNNC", "RFC", "SVC", "GBC", "MLPC"]
+        param = AramisAPI.DateTimeAttackAlgo("spring", "weekend", "14-18h",
+            attacked_gens, algorithms)
+        @test check_algorithm_results(AramisAPI.algorithms(param),
+            algorithms) skip=conda_env_missing
+    end
+
+    @testset "Algorithms: run classifier" begin
+        # run all classifiers for all time steps
+        network = AramisAPI.INITIAL_GRID
+        T = size(AramisAPI.GENS, 2)
+        for t = 1:T
+            AramisAPI.update_injections!(network, t)
+            for algorithm in keys(AramisAPI.ALGORITHM_DIR)
+                for gen in AramisAPI.ATTACKABLE_GENS
+                    @test AramisAPI.run_classifier(algorithm, gen,
+                        AramisAPI.get_features(network)) || true skip=conda_env_missing
+                end
+            end
+        end
+    end
+
+    @testset "Algorithms: check PyCall environment" begin
+        @test AramisAPI.check_python_version() skip=conda_env_missing
+    end
 end
