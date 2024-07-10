@@ -1,7 +1,11 @@
 
 const ALGORITHM_DIR = Dict(
     "NBC"   => "nb",
-    "KNNC"  => "knn"
+    "KNNC"  => "knn",
+    "RFC"   => "rf",
+    "SVC"   => "svc",
+    "GBC"   => "gbc",
+    "MLPC"  => "mlpc"
 )
 
 const FEATURE_NAMES = CSV.read(joinpath([MODULE_FOLDER, "data", "gen_names.csv"]),
@@ -18,6 +22,12 @@ function run_classifier(algorithm::String, gen::String, features::PyObject) :: B
     filename = joinpath([MODULE_FOLDER, "algorithms", ALGORITHM_DIR[algorithm],
         "estimator_$gen.p"])
     estimator = pickle.load(pybuiltin("open")(filename, "rb"))
+    if algorithm == "MLPC"
+        filename = joinpath([MODULE_FOLDER, "algorithms", ALGORITHM_DIR[algorithm],
+            "scaler_$gen.p"])
+        scaler = pickle.load(pybuiltin("open")(filename, "rb"))
+        features = scaler.transform(features)
+    end
     return estimator.predict(features)[1]
 end
 

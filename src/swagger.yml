@@ -128,9 +128,12 @@ components:
           items:
             type: string
           example:
-            - MLPR
             - NBC
             - KNNC
+            - RFC
+            - SVC
+            - GBC
+            - MLPC
     AlgoResults:
       description: algorithm name
       type: object
@@ -141,6 +144,14 @@ components:
           description: attack detected
           type: boolean
       example:
-        MLPR:
+        MLPC:
           '173': true
+          '915': false
+          '918': false
+          '923': false
           '924': false
+          '927': true
+          '931': false
+          '932': false
+          '933': false
+          '934': false

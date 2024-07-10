@@ -101,7 +101,7 @@ end
 
     @testset "Validator: DateTimeAttackAlgo" begin
         # test valid parameters
-        param = AramisAPI.DateTimeAttackAlgo("spring", "weekend", "22-2h", ["918", "932"], ["MLPR"])
+        param = AramisAPI.DateTimeAttackAlgo("spring", "weekend", "22-2h", ["918", "932"], ["MLPC"])
         @test AramisAPI.validate(param)
         # test success with empty list of algorithms
         param = AramisAPI.DateTimeAttackAlgo("spring", "weekend", "22-2h", ["918", "932"], [])
@@ -110,11 +110,11 @@ end
         param = AramisAPI.DateTimeAttackAlgo("spring", "weekend", "22-2h", ["918", "932"], ["random"])
         @test AramisAPI.validate(param) == false
         # check failure with invalid date-time
-        param = AramisAPI.DateTimeAttackAlgo("x", "weekend", "22-2h", ["918", "932"], ["MLPR"])
+        param = AramisAPI.DateTimeAttackAlgo("x", "weekend", "22-2h", ["918", "932"], ["MLPC"])
         @test AramisAPI.validate(param) == false
-        param = AramisAPI.DateTimeAttackAlgo("spring", "x", "22-2h", ["918", "932"], ["MLPR"])
+        param = AramisAPI.DateTimeAttackAlgo("spring", "x", "22-2h", ["918", "932"], ["MLPC"])
         @test AramisAPI.validate(param) == false
-        param = AramisAPI.DateTimeAttackAlgo("spring", "weekend", "x", ["918", "932"], ["MLPR"])
+        param = AramisAPI.DateTimeAttackAlgo("spring", "weekend", "x", ["918", "932"], ["MLPC"])
         @test AramisAPI.validate(param) == false
     end
 
@@ -207,7 +207,7 @@ end
 
     @testset "Handlers: algorithms" begin
         attacked_gens = ["927", "915", "933"]
-        algorithms = ["NBC", "KNNC"]
+        algorithms = ["NBC", "KNNC", "RFC", "SVC", "GBC", "MLPC"]
         param = AramisAPI.DateTimeAttackAlgo("spring", "weekend", "14-18h",
             attacked_gens, algorithms)
         @test check_algorithm_results(AramisAPI.algorithms(param),
