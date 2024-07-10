@@ -1,8 +1,6 @@
 using AramisAPI
 using Test
 
-# some tests are skipped if the conda environment is not installed
-conda_env_missing = !isdir(joinpath([pkgdir(AramisAPI), "conda"]))
 
 function test_valid_network(network)
     @test isa(network, Dict{String, Any})
@@ -211,7 +209,7 @@ end
         param = AramisAPI.DateTimeAttackAlgo("spring", "weekend", "14-18h",
             attacked_gens, algorithms)
         @test check_algorithm_results(AramisAPI.algorithms(param),
-            algorithms) skip=conda_env_missing
+            algorithms)
     end
 
     @testset "Algorithms: run classifier" begin
@@ -223,13 +221,13 @@ end
             for algorithm in keys(AramisAPI.ALGORITHM_DIR)
                 for gen in AramisAPI.ATTACKABLE_GENS
                     @test AramisAPI.run_classifier(algorithm, gen,
-                        AramisAPI.get_features(network)) || true skip=conda_env_missing
+                        AramisAPI.get_features(network)) || true
                 end
             end
         end
     end
 
     @testset "Algorithms: check PyCall environment" begin
-        @test AramisAPI.check_python_version() skip=conda_env_missing
+        @test AramisAPI.check_python_version()
     end
 end
