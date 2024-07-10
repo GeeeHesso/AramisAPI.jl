@@ -24,5 +24,5 @@ end
 
 function get_features(network::Dict{String, Any}) :: PyObject
     return pandas.DataFrame([[network["gen"][id]["pg"] for id in GEN_IDS]],
-        columns=FEATURE_NAMES)
+        columns=FEATURE_NAMES).multiply(100.)
 end
