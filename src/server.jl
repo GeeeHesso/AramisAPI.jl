@@ -48,7 +48,7 @@ function errorhandler(handle)
         catch error
             errorcode = isa(error, ArgumentError) ? 400 : 500
             return HTTP.Response(errorcode, ["content-type" => "text/plain; charset=utf-8"],
-                body=error.msg)
+                body = hasproperty(error, :msg) ? error.msg : "")
         end
     end
 end
