@@ -12,6 +12,7 @@ using PyCall
 include("dto.jl")
 include("validators.jl")
 include("handlers.jl")
+include("powerflow.jl")
 include("algorithms.jl")
 include("server.jl")
 
