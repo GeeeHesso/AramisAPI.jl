@@ -16,4 +16,9 @@ include("powerflow.jl")
 include("algorithms.jl")
 include("server.jl")
 
+function __init__()
+    global pandas = pyimport("pandas")
+    global pickle = pyimport("pickle")
+end
+
 end

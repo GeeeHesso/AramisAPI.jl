@@ -17,12 +17,12 @@ end
 function run_classifier(algorithm::String, gen::String, features::PyObject) :: Bool
     filename = joinpath([MODULE_FOLDER, "algorithms", ALGORITHM_DIR[algorithm],
         "estimator_$gen.p"])
-    estimator = pyimport("pickle").load(pybuiltin("open")(filename, "rb"))
+    estimator = pickle.load(pybuiltin("open")(filename, "rb"))
     return estimator.predict(features)[1]
 end
 
 
 function get_features(network::Dict{String, Any}) :: PyObject
-    return pyimport("pandas").DataFrame([[network["gen"][id]["pg"] for id in GEN_IDS]],
+    return pandas.DataFrame([[network["gen"][id]["pg"] for id in GEN_IDS]],
         columns=FEATURE_NAMES)
 end
