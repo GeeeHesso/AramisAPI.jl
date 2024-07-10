@@ -216,12 +216,14 @@ end
 
     @testset "Algorithms: run classifier" begin
         # run all classifiers for all time steps
+        network = AramisAPI.INITIAL_GRID
         T = size(AramisAPI.GENS, 2)
-        for algorithm in keys(AramisAPI.ALGORITHM_DIR)
-            for gen in AramisAPI.ATTACKABLE_GENS
-                for t = 1:T
+        for t = 1:T
+            AramisAPI.update_injections!(network, t)
+            for algorithm in keys(AramisAPI.ALGORITHM_DIR)
+                for gen in AramisAPI.ATTACKABLE_GENS
                     @test AramisAPI.run_classifier(algorithm, gen,
-                        AramisAPI.GENS[:, t]) == false skip=conda_env_missing
+                        AramisAPI.get_features(network)) == false skip=conda_env_missing
                 end
             end
         end

@@ -4,6 +4,9 @@ const ALGORITHM_DIR = Dict(
     "KNNC"  => "knn"
 )
 
+const FEATURE_NAMES = CSV.read(joinpath([MODULE_FOLDER, "data", "gen_names.csv"]),
+    CSV.Tables.matrix, header=false)[:, 1]
+
 
 function check_python_version()
     sys = pyimport("sys")
@@ -11,9 +14,15 @@ function check_python_version()
 end
 
 
-function run_classifier(algorithm::String, gen::String, x::AbstractVector{<:Real}) :: Bool
+function run_classifier(algorithm::String, gen::String, features::PyObject) :: Bool
     filename = joinpath([MODULE_FOLDER, "algorithms", ALGORITHM_DIR[algorithm],
         "estimator_$gen.p"])
     estimator = pyimport("pickle").load(pybuiltin("open")(filename, "rb"))
-    return estimator.predict(reshape(x, (1, :)))[1]
+    return estimator.predict(features)[1]
+end
+
+
+function get_features(network::Dict{String, Any}) :: PyObject
+    return pyimport("pandas").DataFrame([[network["gen"][id]["pg"] for id in GEN_IDS]],
+        columns=FEATURE_NAMES)
 end
