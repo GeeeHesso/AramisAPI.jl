@@ -38,6 +38,12 @@ using Pkg
 Pkg.add("https://github.com/GeeeHesso/AramisAPI.jl")
 ```
 
+The installation can be tested with
+```julia
+using Pkg
+Pkg.test("AramisAPI")
+```
+
 ## Usage
 
 Load the package and start the API with
