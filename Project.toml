@@ -14,6 +14,7 @@ PyCall = "438e738f-606a-5dbb-bf0a-cddfbfd45ab0"
 YAML = "ddb6d928-2868-570f-bddf-ab3f9cf99eb6"
 
 [compat]
+CSV = "0.10"
 DataDrop = "0.1"
 HTTP = "1"
 JSON = "0.21"
