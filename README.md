@@ -38,7 +38,7 @@ using Pkg
 Pkg.add("https://github.com/GeeeHesso/AramisAPI.jl")
 ```
 
-### Usage
+## Usage
 
 Load the package and start the API with
 ```julia
