@@ -218,7 +218,7 @@ end
         T = size(AramisAPI.GENS, 2)
         for t = 1:T
             AramisAPI.update_injections!(network, t)
-            for algorithm in keys(AramisAPI.ALGORITHM_DIR)
+            for algorithm in keys(AramisAPI.CLASSIFIER_DIR)
                 for gen in AramisAPI.ATTACKABLE_GENS
                     @test AramisAPI.run_classifier(algorithm, gen,
                         AramisAPI.get_features(network)) || true

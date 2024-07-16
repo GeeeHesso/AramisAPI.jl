@@ -35,6 +35,6 @@ function algorithms(params::DateTimeAttackAlgo) :: Dict{String, Any}
     attack!(network, params.attacked_gens)
     x = get_features(network)
     return Dict(algo => Dict(gen => run_classifier(algo, gen, x) for gen in ATTACKABLE_GENS)
-        for algo in intersect(params.algorithms, keys(ALGORITHM_DIR)))
+        for algo in intersect(params.algorithms, keys(CLASSIFIER_DIR)))
     # TODO: add support for all algorithms
 end

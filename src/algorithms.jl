@@ -1,5 +1,5 @@
 
-const ALGORITHM_DIR = Dict(
+const CLASSIFIER_DIR = Dict(
     "NBC"   => "nb",
     "KNNC"  => "knn",
     "RFC"   => "rf",
@@ -19,11 +19,11 @@ end
 
 
 function run_classifier(algorithm::String, gen::String, features::PyObject) :: Bool
-    filename = joinpath([MODULE_FOLDER, "algorithms", ALGORITHM_DIR[algorithm],
+    filename = joinpath([MODULE_FOLDER, "algorithms", CLASSIFIER_DIR[algorithm],
         "estimator_$gen.p"])
     estimator = pickle.load(pybuiltin("open")(filename, "rb"))
     if algorithm == "MLPC"
-        filename = joinpath([MODULE_FOLDER, "algorithms", ALGORITHM_DIR[algorithm],
+        filename = joinpath([MODULE_FOLDER, "algorithms", CLASSIFIER_DIR[algorithm],
             "scaler_$gen.p"])
         scaler = pickle.load(pybuiltin("open")(filename, "rb"))
         features = scaler.transform(features)
