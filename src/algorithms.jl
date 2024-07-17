@@ -10,6 +10,7 @@ const CLASSIFIER_DIR = Dict(
 
 const FEATURE_NAMES = CSV.read(joinpath([MODULE_FOLDER, "data", "gen_names.csv"]),
     CSV.Tables.matrix, header=false)[:, 1]
+const GEN_HIST = DataDrop.retrieve_matrix(joinpath([MODULE_FOLDER, "data", "gen_hist.h5"]))
 
 
 function check_python_version()
@@ -35,4 +36,12 @@ end
 function get_features(network::Dict{String, Any}) :: PyObject
     return pandas.DataFrame([[network["gen"][id]["pg"] for id in GEN_IDS]],
         columns=FEATURE_NAMES).multiply(100.)
+end
+
+
+function get_history(gen::String, t::Int) :: PyObject
+    id = findfirst(==(gen), ATTACKABLE_GENS)
+    return pandas.Series([GEN_HIST[id, time] for time = 4*t-3:4*t],
+        index=["y_t-4", "y_t-3", "y_t-2", "y_t-1"],
+        name=FEATURE_NAMES[id]).multiply(100.)
 end

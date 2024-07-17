@@ -35,6 +35,16 @@ end
 end
 
 
+@testset "Algorithms: get history" begin
+    x = AramisAPI.get_history("923", 1)
+    @test x.size == 4
+    x_other_t = AramisAPI.get_history("923", 2)
+    @test x.values != x_other_t.values
+    x_other_gen = AramisAPI.get_history("934", 1)
+    @test x.values != x_other_gen.values
+end
+
+
 @testset "Algorithms: check PyCall environment" begin
     @test AramisAPI.check_python_version()
 end
