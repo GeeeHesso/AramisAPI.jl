@@ -7,7 +7,9 @@ const CLASSIFIER_DIR = Dict(
     "GBC"   => "gbc",
     "MLPC"  => "mlpc"
 )
-
+const REGRESSOR_DIR = Dict(
+    "MLPR"  => "mlpr"
+)
 const FEATURE_NAMES = CSV.read(joinpath([MODULE_FOLDER, "data", "gen_names.csv"]),
     CSV.Tables.matrix, header=false)[:, 1]
 const GEN_HIST = DataDrop.retrieve_matrix(joinpath([MODULE_FOLDER, "data", "gen_hist.h5"]))
@@ -30,6 +32,33 @@ function run_classifier(algorithm::String, gen::String, features::PyObject) :: B
         features = scaler.transform(features)
     end
     return estimator.predict(features)[1]
+end
+
+
+function run_regressor(algorithm::String, gen::String, features::PyObject, t::Int) :: Bool
+    # load regressor
+    dir = joinpath([MODULE_FOLDER, "algorithms", REGRESSOR_DIR[algorithm]])
+    estimator = pickle.load(pybuiltin("open")(joinpath([dir, "estimator_$gen.p"]), "rb"))
+
+    # load threshold value
+    threshold_df = pickle.load(pybuiltin("open")(joinpath([dir, "threshold_$gen.p"]), "rb"))
+    threshold = threshold_df."best_threshold".get(0)
+
+    # identify generator name
+    label_id = findfirst(x -> string(x) == gen, GEN_IDS)
+    label_name = FEATURE_NAMES[label_id]
+
+    # prepare label and features
+    features_series = features.T.squeeze()
+    y = features_series.get(label_name)
+    x_context = features_series.drop(index=label_name)
+    x_hist = get_history(gen, t)
+    x = pandas.concat([x_hist, x_context], ignore_index=true).to_frame().T
+
+    # perform regression
+    y_pred = estimator.predict(x)[1]
+
+    return abs(y - y_pred) > threshold
 end
 
 

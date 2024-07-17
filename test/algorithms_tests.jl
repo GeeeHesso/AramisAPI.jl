@@ -12,10 +12,26 @@ end
     T = size(AramisAPI.GENS, 2)
     for t = 1:T
         AramisAPI.update_injections!(network, t)
+        features = AramisAPI.get_features(network)
         for algorithm in keys(AramisAPI.CLASSIFIER_DIR)
             for gen in AramisAPI.ATTACKABLE_GENS
-                @test AramisAPI.run_classifier(algorithm, gen,
-                    AramisAPI.get_features(network)) || true
+                @test AramisAPI.run_classifier(algorithm, gen, features) || true
+            end
+        end
+    end
+end
+
+
+@testset "Algorithms: run regressor" begin
+    # run all regressors for all time steps
+    network = AramisAPI.INITIAL_GRID
+    T = size(AramisAPI.GENS, 2)
+    for t = 1:T
+        AramisAPI.update_injections!(network, t)
+        features = AramisAPI.get_features(network)
+        for algorithm in keys(AramisAPI.REGRESSOR_DIR)
+            for gen in AramisAPI.ATTACKABLE_GENS
+                @test AramisAPI.run_regressor(algorithm, gen, features, t) || true
             end
         end
     end
