@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: Aramis API
-  version: 0.2.0
+  version: 0.2.1
   description: A Julia API for the Aramis project
 paths:
   /initial_network:
@@ -134,6 +134,7 @@ components:
             - SVC
             - GBC
             - MLPC
+            - MLPR
     AlgoResults:
       description: algorithm name
       type: object
