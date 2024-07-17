@@ -134,6 +134,7 @@ components:
             - SVC
             - GBC
             - MLPC
+            - MLPR
     AlgoResults:
       description: algorithm name
       type: object
