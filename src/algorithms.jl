@@ -29,13 +29,10 @@ end
 
 
 function run_classifier(algorithm::String, gen::String, features::PyObject) :: Bool
-    filename = joinpath([MODULE_FOLDER, "algorithms", CLASSIFIER_DIR[algorithm],
-        "estimator_$gen.p"])
-    estimator = pickle.load(pybuiltin("open")(filename, "rb"))
+    dir = joinpath([MODULE_FOLDER, "algorithms", CLASSIFIER_DIR[algorithm]])
+    estimator = pickle.load(pybuiltin("open")(joinpath([dir, "estimator_$gen.p"]), "rb"))
     if algorithm == "MLPC"
-        filename = joinpath([MODULE_FOLDER, "algorithms", CLASSIFIER_DIR[algorithm],
-            "scaler_$gen.p"])
-        scaler = pickle.load(pybuiltin("open")(filename, "rb"))
+        scaler = pickle.load(pybuiltin("open")(joinpath([dir, "scaler_$gen.p"]), "rb"))
         features = scaler.transform(features)
     end
     return estimator.predict(features)[1]
@@ -43,9 +40,11 @@ end
 
 
 function run_regressor(algorithm::String, gen::String, features::PyObject, t::Int) :: Bool
-    # load regressor
+    # load regressor and scaler
     dir = joinpath([MODULE_FOLDER, "algorithms", REGRESSOR_DIR[algorithm]])
     estimator = pickle.load(pybuiltin("open")(joinpath([dir, "estimator_$gen.p"]), "rb"))
+    scaler_x = pickle.load(pybuiltin("open")(joinpath([dir, "scaler_x_$gen.p"]), "rb"))
+    scaler_y = pickle.load(pybuiltin("open")(joinpath([dir, "scaler_y_$gen.p"]), "rb"))
 
     # load threshold value
     threshold_df = pickle.load(pybuiltin("open")(joinpath([dir, "threshold_$gen.p"]), "rb"))
@@ -59,11 +58,14 @@ function run_regressor(algorithm::String, gen::String, features::PyObject, t::In
     features_series = features.T.squeeze()
     y = features_series.get(label_name)
     x_context = features_series.drop(index=label_name)
+    x_context = x_context.rename(index=Dict(name => "$(name)_t" for name in x_context.index))
     x_hist = get_history(gen, t)
-    x = pandas.concat([x_hist, x_context], ignore_index=true).to_frame().T
+    x = pandas.concat([x_hist, x_context]).to_frame().T
 
     # perform regression
-    y_pred = estimator.predict(x)[1]
+    x_scaled = scaler_x.transform(x)
+    y_scaled = pandas.DataFrame([estimator.predict(x_scaled)])
+    y_pred = scaler_y.inverse_transform(y_scaled)[1]
 
     return abs(y - y_pred) > threshold
 end
