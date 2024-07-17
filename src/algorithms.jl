@@ -21,6 +21,13 @@ function check_python_version()
 end
 
 
+function run_algorithm(algorithm::String, gen::String, features::PyObject, t::Int) :: Bool
+    return algorithm in keys(CLASSIFIER_DIR) ?
+        run_classifier(algorithm, gen, features) :
+        run_regressor(algorithm, gen, features, t)
+end
+
+
 function run_classifier(algorithm::String, gen::String, features::PyObject) :: Bool
     filename = joinpath([MODULE_FOLDER, "algorithms", CLASSIFIER_DIR[algorithm],
         "estimator_$gen.p"])

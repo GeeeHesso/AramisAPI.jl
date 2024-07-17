@@ -42,7 +42,7 @@ end
 
 @testset "Handlers: algorithms" begin
     attacked_gens = ["927", "915", "933"]
-    algorithms = ["NBC", "KNNC", "RFC", "SVC", "GBC", "MLPC"]
+    algorithms = ["NBC", "KNNC", "RFC", "SVC", "GBC", "MLPC", "MLPR"]
     param = AramisAPI.DateTimeAttackAlgo("spring", "weekend", "14-18h",
         attacked_gens, algorithms)
     @test check_algorithm_results(AramisAPI.algorithms(param),
