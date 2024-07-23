@@ -35,7 +35,7 @@ If successful, the installation script should output something like `Using Pytho
 Once this is done, the Julia package *AramisAPI.jl* can be installed with
 ```julia
 using Pkg
-Pkg.add("https://github.com/GeeeHesso/AramisAPI.jl")
+Pkg.add(url="https://github.com/GeeeHesso/AramisAPI.jl")
 ```
 
 The installation can be tested with
