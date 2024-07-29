@@ -19,6 +19,13 @@ ENV["PYTHON"] = "<path to your python3.7 executable>"
 Pkg.build("PyCall")
 ```
 
+You can verify which version of Python is being used by PyCall with the commands 
+```julia
+using PyCall
+sys = pyimport("sys")
+sys.version
+```
+
 Alternatively, you can set up a virtual environment using Anaconda
 ([Miniconda installation link](https://docs.anaconda.com/miniconda/miniconda-install/)).
 To do so, download the script [setup.jl](./setup.jl) and run it in the Julia REPL with
