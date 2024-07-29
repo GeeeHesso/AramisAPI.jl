@@ -59,18 +59,18 @@ end
 @testset "Powerflow: get timestep" begin
     # first timestep of the year
     datetimes = [
-        AramisAPI.DateTime("winter", "weekday", 0),
-        AramisAPI.DateTimeAttack("winter", "weekday", 0, ["918"]),
-        AramisAPI.DateTimeAttackAlgo("winter", "weekday", 0, ["918"], ["MLPR"])
+        AramisAPI.DateTime("winter", "weekday", 0, 100),
+        AramisAPI.DateTimeAttack("winter", "weekday", 0, 100, ["918"]),
+        AramisAPI.DateTimeAttackAlgo("winter", "weekday", 0, 100, ["918"], ["MLPR"])
     ]
     for datetime in datetimes
         @test AramisAPI.get_timestep(datetime) == 1
     end
     # last timestep of the year
     datetimes = [
-        AramisAPI.DateTime("fall", "weekend", 20),
-        AramisAPI.DateTimeAttack("fall", "weekend", 20, ["918"]),
-        AramisAPI.DateTimeAttackAlgo("fall", "weekend", 20, ["918"], ["MLPR"]),
+        AramisAPI.DateTime("fall", "weekend", 20, 100),
+        AramisAPI.DateTimeAttack("fall", "weekend", 20, 100, ["918"]),
+        AramisAPI.DateTimeAttackAlgo("fall", "weekend", 20, 100, ["918"], ["MLPR"]),
     ]
     T = size(AramisAPI.LOADS, 2)
     for datetime in datetimes

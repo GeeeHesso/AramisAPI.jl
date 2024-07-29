@@ -22,6 +22,7 @@ struct DateTime
     season::String
     day::String
     hour::Int
+    scale_factor::Float64
 end
 
 
@@ -29,6 +30,7 @@ struct DateTimeAttack
     season::String
     day::String
     hour::Int
+    scale_factor::Float64
     attacked_gens::Vector{String}
 end
 
@@ -37,6 +39,7 @@ struct DateTimeAttackAlgo
     season::String
     day::String
     hour::Int
+    scale_factor::Float64
     attacked_gens::Vector{String}
     algorithms::Vector{String}
 end

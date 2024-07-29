@@ -86,6 +86,8 @@ components:
         hour:
           enum: [0, 4, 8, 12, 16, 20]
           example: 12
+        scale_factor:
+          example: 100
     DateTimeAttack:
       properties:
         season:
@@ -97,6 +99,8 @@ components:
         hour:
           enum: [0, 4, 8, 12, 16, 20]
           example: 12
+        scale_factor:
+          example: 100
         attacked_gens:
           type: array
           items:
@@ -116,6 +120,8 @@ components:
         hour:
           enum: [0, 4, 8, 12, 16, 20]
           example: 12
+        scale_factor:
+          example: 100
         attacked_gens:
           type: array
           items:
