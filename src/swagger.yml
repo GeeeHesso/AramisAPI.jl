@@ -84,8 +84,8 @@ components:
           enum: [weekday, weekend]
           example: weekday
         hour:
-          enum: ['22-2h', '2-6h', '6-10h', '10-14h', '14-18h', '18-22h']
-          example: '10-14h'
+          enum: [0, 4, 8, 12, 16, 20]
+          example: 12
     DateTimeAttack:
       properties:
         season:
@@ -95,8 +95,8 @@ components:
           enum: [weekday, weekend]
           example: weekday
         hour:
-          enum: ['22-2h', '2-6h', '6-10h', '10-14h', '14-18h', '18-22h']
-          example: '10-14h'
+          enum: [0, 4, 8, 12, 16, 20]
+          example: 12
         attacked_gens:
           type: array
           items:
@@ -114,8 +114,8 @@ components:
           enum: [weekday, weekend]
           example: weekday
         hour:
-          enum: ['22-2h', '2-6h', '6-10h', '10-14h', '14-18h', '18-22h']
-          example: '10-14h'
+          enum: [0, 4, 8, 12, 16, 20]
+          example: 12
         attacked_gens:
           type: array
           items:

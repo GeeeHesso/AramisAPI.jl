@@ -1,8 +1,13 @@
 import Oxygen: validate
 
 
+function is_valid_hour(h::Int) :: Bool
+    return h >= 0 && h <= 24 && h % 4 == 0
+end
+
+
 function validate(req::DateTime)
-    req.season in keys(SEASONS) && req.day in keys(DAYS) && req.hour in keys(HOURS)
+    req.season in keys(SEASONS) && req.day in keys(DAYS) && is_valid_hour(req.hour)
 end
 
 

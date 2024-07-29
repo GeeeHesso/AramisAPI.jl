@@ -11,7 +11,7 @@ const LOADS = DataDrop.retrieve_matrix(joinpath([MODULE_FOLDER, "data", "loads.h
 
 
 function get_timestep(datetime::Union{DateTime, DateTimeAttack, DateTimeAttackAlgo})
-    12 * SEASONS[datetime.season] + 6 * DAYS[datetime.day] + HOURS[datetime.hour] + 1
+    12 * SEASONS[datetime.season] + 6 * DAYS[datetime.day] + (datetime.hour % 24) ÷ HOUR_STEP  + 1
 end
 
 
