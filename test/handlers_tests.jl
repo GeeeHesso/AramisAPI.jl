@@ -6,7 +6,7 @@ end
 
 
 @testset "Handlers: real_network" begin
-    param = AramisAPI.DateTime("fall", "weekday", "10-14h")
+    param = AramisAPI.DateTime("fall", "weekday", 12)
     network = AramisAPI.real_network(param)
     test_valid_network(network)
     test_power_balance(network)
@@ -22,7 +22,7 @@ end
 
 @testset "Handlers: attacked_network" begin
     attacked_gens = ["918", "931"]
-    param = AramisAPI.DateTimeAttack("summer", "weekend", "18-22h", attacked_gens)
+    param = AramisAPI.DateTimeAttack("summer", "weekend", 20, attacked_gens)
     network = AramisAPI.attacked_network(param)
     test_valid_network(network)
     test_power_balance(network)
@@ -43,7 +43,7 @@ end
 @testset "Handlers: algorithms" begin
     attacked_gens = ["927", "915", "933"]
     algorithms = ["NBC", "KNNC", "RFC", "SVC", "GBC", "MLPC", "MLPR"]
-    param = AramisAPI.DateTimeAttackAlgo("spring", "weekend", "14-18h",
+    param = AramisAPI.DateTimeAttackAlgo("spring", "weekend", 16,
         attacked_gens, algorithms)
     @test check_algorithm_results(AramisAPI.algorithms(param),
         algorithms)

@@ -50,8 +50,7 @@ end
     @test issetequal(keys(AramisAPI.INITIAL_GRID["load"]), AramisAPI.LOAD_IDS)
     n_gens = length(AramisAPI.INITIAL_GRID["gen"])
     n_loads = length(AramisAPI.INITIAL_GRID["load"])
-    n_timesteps = (length(AramisAPI.SEASONS)
-        * length(AramisAPI.DAYS) * length(AramisAPI.HOURS))
+    n_timesteps = length(AramisAPI.SEASONS) * length(AramisAPI.DAYS) * 24 ÷ AramisAPI.HOUR_STEP
     @test size(AramisAPI.GENS) == (n_gens, n_timesteps)
     @test size(AramisAPI.LOADS) == (n_loads, n_timesteps)
 end
@@ -60,18 +59,18 @@ end
 @testset "Powerflow: get timestep" begin
     # first timestep of the year
     datetimes = [
-        AramisAPI.DateTime("winter", "weekday", "22-2h"),
-        AramisAPI.DateTimeAttack("winter", "weekday", "22-2h", ["918"]),
-        AramisAPI.DateTimeAttackAlgo("winter", "weekday", "22-2h", ["918"], ["MLPR"])
+        AramisAPI.DateTime("winter", "weekday", 0),
+        AramisAPI.DateTimeAttack("winter", "weekday", 0, ["918"]),
+        AramisAPI.DateTimeAttackAlgo("winter", "weekday", 0, ["918"], ["MLPR"])
     ]
     for datetime in datetimes
         @test AramisAPI.get_timestep(datetime) == 1
     end
     # last timestep of the year
     datetimes = [
-        AramisAPI.DateTime("fall", "weekend", "18-22h"),
-        AramisAPI.DateTimeAttack("fall", "weekend", "18-22h", ["918"]),
-        AramisAPI.DateTimeAttackAlgo("fall", "weekend", "18-22h", ["918"], ["MLPR"]),
+        AramisAPI.DateTime("fall", "weekend", 20),
+        AramisAPI.DateTimeAttack("fall", "weekend", 20, ["918"]),
+        AramisAPI.DateTimeAttackAlgo("fall", "weekend", 20, ["918"], ["MLPR"]),
     ]
     T = size(AramisAPI.LOADS, 2)
     for datetime in datetimes
