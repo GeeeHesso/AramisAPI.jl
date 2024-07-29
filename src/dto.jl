@@ -10,14 +10,7 @@ const DAYS = Dict(
     "weekend" => 1
 )
 
-const HOURS = Dict(
-    "2-6h" => 1,
-    "6-10h" => 2,
-    "10-14h" => 3,
-    "14-18h" => 4,
-    "18-22h" => 5,
-    "22-2h" => 0
-)
+const HOUR_STEP = 4
 
 const ATTACKABLE_GENS = [
     "173", "915", "918", "923", "924", "927", "931", "932", "933", "934"]
@@ -28,14 +21,16 @@ const ALGORITHMS = ["NBC", "KNNC", "RFC", "SVC", "GBC", "MLPC", "MLPR"]
 struct DateTime
     season::String
     day::String
-    hour::String
+    hour::Int
+    scale_factor::Float64
 end
 
 
 struct DateTimeAttack
     season::String
     day::String
-    hour::String
+    hour::Int
+    scale_factor::Float64
     attacked_gens::Vector{String}
 end
 
@@ -43,7 +38,8 @@ end
 struct DateTimeAttackAlgo
     season::String
     day::String
-    hour::String
+    hour::Int
+    scale_factor::Float64
     attacked_gens::Vector{String}
     algorithms::Vector{String}
 end

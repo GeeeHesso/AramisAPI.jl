@@ -12,7 +12,7 @@ end
 function real_network(params::DateTime) :: Dict{String, Any}
     network = deepcopy(INITIAL_GRID)
     t = get_timestep(params)
-    update_injections!(network, t)
+    update_injections!(network, t, params.scale_factor)
     powerflow!(network)
     return network
 end
@@ -21,7 +21,7 @@ end
 function attacked_network(params::DateTimeAttack) :: Dict{String, Any}
     network = deepcopy(INITIAL_GRID)
     t = get_timestep(params)
-    update_injections!(network, t)
+    update_injections!(network, t, params.scale_factor)
     attack!(network, params.attacked_gens)
     powerflow!(network)
     return network
@@ -31,7 +31,7 @@ end
 function algorithms(params::DateTimeAttackAlgo) :: Dict{String, Any}
     network = deepcopy(INITIAL_GRID)
     t = get_timestep(params)
-    update_injections!(network, t)
+    update_injections!(network, t, params.scale_factor)
     attack!(network, params.attacked_gens)
     x = get_features(network)
     return Dict(algo => Dict(gen => run_algorithm(algo, gen, x, t) for gen in ATTACKABLE_GENS)

@@ -11,16 +11,16 @@ const LOADS = DataDrop.retrieve_matrix(joinpath([MODULE_FOLDER, "data", "loads.h
 
 
 function get_timestep(datetime::Union{DateTime, DateTimeAttack, DateTimeAttackAlgo})
-    12 * SEASONS[datetime.season] + 6 * DAYS[datetime.day] + HOURS[datetime.hour] + 1
+    12 * SEASONS[datetime.season] + 6 * DAYS[datetime.day] + (datetime.hour % 24) ÷ HOUR_STEP  + 1
 end
 
 
-function update_injections!(network::Dict{String, Any}, t::Int)
+function update_injections!(network::Dict{String, Any}, t::Int, scale_factor::Real)
     for (i, load_id) ∈ enumerate(LOAD_IDS)
-        network["load"][load_id]["pd"] = LOADS[i, t]
+        network["load"][load_id]["pd"] = LOADS[i, t] * scale_factor / 100.0
     end
     for (i, gen_id) ∈ enumerate(GEN_IDS)
-        network["gen"][gen_id]["pg"] = GENS[i, t]
+        network["gen"][gen_id]["pg"] = GENS[i, t] * scale_factor / 100.0
     end
     nothing
 end
