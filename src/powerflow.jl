@@ -15,12 +15,12 @@ function get_timestep(datetime::Union{DateTime, DateTimeAttack, DateTimeAttackAl
 end
 
 
-function update_injections!(network::Dict{String, Any}, t::Int)
+function update_injections!(network::Dict{String, Any}, t::Int, scale_factor::Real)
     for (i, load_id) ∈ enumerate(LOAD_IDS)
-        network["load"][load_id]["pd"] = LOADS[i, t]
+        network["load"][load_id]["pd"] = LOADS[i, t] * scale_factor / 100.0
     end
     for (i, gen_id) ∈ enumerate(GEN_IDS)
-        network["gen"][gen_id]["pg"] = GENS[i, t]
+        network["gen"][gen_id]["pg"] = GENS[i, t] * scale_factor / 100.0
     end
     nothing
 end
