@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: Aramis API
-  version: 0.2.1
+  version: 0.3.0
   description: A Julia API for the Aramis project
 paths:
   /initial_network:
@@ -84,8 +84,10 @@ components:
           enum: [weekday, weekend]
           example: weekday
         hour:
-          enum: ['22-2h', '2-6h', '6-10h', '10-14h', '14-18h', '18-22h']
-          example: '10-14h'
+          enum: [0, 4, 8, 12, 16, 20]
+          example: 12
+        scale_factor:
+          example: 100
     DateTimeAttack:
       properties:
         season:
@@ -95,8 +97,10 @@ components:
           enum: [weekday, weekend]
           example: weekday
         hour:
-          enum: ['22-2h', '2-6h', '6-10h', '10-14h', '14-18h', '18-22h']
-          example: '10-14h'
+          enum: [0, 4, 8, 12, 16, 20]
+          example: 12
+        scale_factor:
+          example: 100
         attacked_gens:
           type: array
           items:
@@ -114,8 +118,10 @@ components:
           enum: [weekday, weekend]
           example: weekday
         hour:
-          enum: ['22-2h', '2-6h', '6-10h', '10-14h', '14-18h', '18-22h']
-          example: '10-14h'
+          enum: [0, 4, 8, 12, 16, 20]
+          example: 12
+        scale_factor:
+          example: 100
         attacked_gens:
           type: array
           items:

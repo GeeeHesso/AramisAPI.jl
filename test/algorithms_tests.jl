@@ -11,7 +11,7 @@ end
     network = AramisAPI.INITIAL_GRID
     T = size(AramisAPI.GENS, 2)
     for t = 1:T
-        AramisAPI.update_injections!(network, t)
+        AramisAPI.update_injections!(network, t, 100)
         features = AramisAPI.get_features(network)
         for algorithm in keys(AramisAPI.CLASSIFIER_DIR)
             for gen in AramisAPI.ATTACKABLE_GENS
@@ -27,7 +27,7 @@ end
     network = AramisAPI.INITIAL_GRID
     T = size(AramisAPI.GENS, 2)
     for t = 1:T
-        AramisAPI.update_injections!(network, t)
+        AramisAPI.update_injections!(network, t, 100)
         features = AramisAPI.get_features(network)
         for algorithm in keys(AramisAPI.REGRESSOR_DIR)
             for gen in AramisAPI.ATTACKABLE_GENS
@@ -40,12 +40,12 @@ end
 
 @testset "Algorithms: get features" begin
     network = AramisAPI.INITIAL_GRID
-    AramisAPI.update_injections!(network, 1)
+    AramisAPI.update_injections!(network, 1, 100)
     x = AramisAPI.get_features(network)
     @test x.shape == (1, length(AramisAPI.GEN_IDS))
     x_dict = x.to_dict()
     @test issetequal(keys(x_dict), AramisAPI.FEATURE_NAMES)
-    AramisAPI.update_injections!(network, 2)
+    AramisAPI.update_injections!(network, 2, 100)
     x_other_t = AramisAPI.get_features(network)
     @test x.values != x_other_t.values
 end
