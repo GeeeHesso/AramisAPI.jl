@@ -61,3 +61,15 @@ start_server()
 
 The default IP is `127.0.0.1` and the default port 8080. After launching the server, the Swagger documentation page is available at http://127.0.0.1:8080/docs.
 
+## Docker container
+
+The [Docker file](./Dockerfile) provided with the package can be used to build a container.
+Download the file and run
+```bash
+docker build -t aramis-api <path-to-the-docker-file>
+```
+The image created in this way is about 2.7 GB. To run the container, use
+```bash
+docker run -p 8080:8080 --restart=unless-stopped aramis-api
+```
+The API is then available at http://0.0.0.0:8080/docs.
