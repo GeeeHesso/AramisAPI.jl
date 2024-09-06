@@ -1,6 +1,13 @@
 export start_server
 
 
+const CORS_HEADERS = [
+    "Access-Control-Allow-Origin" => "http://localhost:4200/",
+    "Access-Control-Allow-Headers" => "*",
+    "Access-Control-Allow-Methods" => "POST, GET, OPTIONS"
+]
+
+
 function start_server(; port::Int64=8080, host::String="127.0.0.1") :: Nothing
 
     # Return the initial grid to be shown at application startup
@@ -21,23 +28,18 @@ function start_server(; port::Int64=8080, host::String="127.0.0.1") :: Nothing
     swagger_schema = YAML.load_file(joinpath([MODULE_FOLDER, "src", "swagger.yml"]))
     mergeschema(swagger_schema)
 
-    serve(port=port, host=host, middleware=[errorhandler], serialize=false)
+    serve(port=port, host=host, middleware=[corsmiddleware, errorhandler], serialize=false)
 #    serve(..., access_log=nothing) # to improve performance
 #    serveparallel(...)
-
-#    function CorsMiddleware(handler)
-#        return function (req::HTTP.Request)
-#            if HTTP.method(req) == "OPTIONS"
-#                return HTTP.Response(200, headers)
-#            else
-#                return handler(req) # passes the request to the AuthMiddleware
-#            end
-#        end
-#    end
 
     nothing
 end
 
+function corsmiddleware(handle)
+   return function (req::HTTP.Request)
+       return HTTP.method(req) == "OPTIONS" ? HTTP.Response(200, CORS_HEADERS) : handle(req)
+   end
+end
 
 function errorhandler(handle)
     return function(req)
