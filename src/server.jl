@@ -45,6 +45,8 @@ end
 
 function corsmiddleware(handler)
    return function (req::HTTP.Request)
+       println("corsmiddleware")
+       println(HTTP.method(req))
        return HTTP.method(req) == "OPTIONS" ? HTTP.Response(200, CORS_OPT_HEADERS) : handler(req)
    end
 end
@@ -53,10 +55,12 @@ function errorhandler(handler)
     return function(req)
         try
             result = handler(req)
+            println("Errorhandler response 200")
             return HTTP.Response(200, [CORS_RES_HEADERS],
                 body=JSON.json(result))
         catch error
             errorcode = isa(error, ArgumentError) ? 400 : 500
+            println("Errorhandler response 400/500")
             return HTTP.Response(errorcode, [CORS_RES_HEADERS],
                 body = hasproperty(error, :msg) ? error.msg : "")
         end
