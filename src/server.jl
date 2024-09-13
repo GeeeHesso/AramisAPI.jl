@@ -1,7 +1,15 @@
 export start_server
 
 
-const CORS_HEADERS = [
+const CORS_OPT_HEADERS = [
+    "Content-Type" => "text/html; charset=utf-8",
+    "Access-Control-Allow-Origin" => "*",
+    "Access-Control-Allow-Headers" => "*",
+    "Access-Control-Allow-Methods" => "POST, GET, OPTIONS"
+]
+
+const CORS_RES_HEADERS = [
+    "Content-Type" => "application/json; charset=utf-8",
     "Access-Control-Allow-Origin" => "*",
     "Access-Control-Allow-Headers" => "*",
     "Access-Control-Allow-Methods" => "POST, GET, OPTIONS"
@@ -37,7 +45,7 @@ end
 
 function corsmiddleware(handler)
    return function (req::HTTP.Request)
-       return HTTP.method(req) == "OPTIONS" ? HTTP.Response(200, CORS_HEADERS) : handler(req)
+       return HTTP.method(req) == "OPTIONS" ? HTTP.Response(200, CORS_OPT_HEADERS) : handler(req)
    end
 end
 
@@ -45,11 +53,11 @@ function errorhandler(handler)
     return function(req)
         try
             result = handler(req)
-            return HTTP.Response(200, [["content-type" => "application/json; charset=utf-8"]; CORS_HEADERS],
+            return HTTP.Response(200, [CORS_RES_HEADERS],
                 body=JSON.json(result))
         catch error
             errorcode = isa(error, ArgumentError) ? 400 : 500
-            return HTTP.Response(errorcode, [["content-type" => "text/plain; charset=utf-8"]; CORS_HEADERS],
+            return HTTP.Response(errorcode, [CORS_RES_HEADERS],
                 body = hasproperty(error, :msg) ? error.msg : "")
         end
     end
