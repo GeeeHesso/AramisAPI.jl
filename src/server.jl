@@ -2,7 +2,7 @@ export start_server
 
 
 const CORS_HEADERS = [
-    "Access-Control-Allow-Origin" => "http://localhost:4200",
+    "Access-Control-Allow-Origin" => "https://swissgrid.iigweb.hevs.ch/",
     "Access-Control-Allow-Headers" => "*",
     "Access-Control-Allow-Methods" => "POST, GET, OPTIONS"
 ]
