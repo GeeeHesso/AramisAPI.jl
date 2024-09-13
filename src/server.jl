@@ -36,7 +36,7 @@ function start_server(; port::Int64=8080, host::String="127.0.0.1") :: Nothing
     swagger_schema = YAML.load_file(joinpath([MODULE_FOLDER, "src", "swagger.yml"]))
     mergeschema(swagger_schema)
 
-    serve(port=port, host=host, middleware=[corsmiddleware, errorhandler], serialize=false)
+    serve(port=port, host=host, middleware=[errorhandler, corsmiddleware], serialize=false)
 #    serve(..., access_log=nothing) # to improve performance
 #    serveparallel(...)
 
