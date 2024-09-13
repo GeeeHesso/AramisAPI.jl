@@ -2,7 +2,7 @@ export start_server
 
 
 const CORS_HEADERS = [
-    "Access-Control-Allow-Origin" => "http://localhost:4200/",
+    "Access-Control-Allow-Origin" => "http://localhost:4200",
     "Access-Control-Allow-Headers" => "*",
     "Access-Control-Allow-Methods" => "POST, GET, OPTIONS"
 ]
@@ -28,28 +28,28 @@ function start_server(; port::Int64=8080, host::String="127.0.0.1") :: Nothing
     swagger_schema = YAML.load_file(joinpath([MODULE_FOLDER, "src", "swagger.yml"]))
     mergeschema(swagger_schema)
 
-    serve(port=port, host=host, middleware=[corsmiddleware, errorhandler], serialize=false)
+    serve(port=port, host=host, middleware=[errorhandler, corsmiddleware], serialize=false)
 #    serve(..., access_log=nothing) # to improve performance
 #    serveparallel(...)
 
     nothing
 end
 
-function corsmiddleware(handle)
+function corsmiddleware(handler)
    return function (req::HTTP.Request)
-       return HTTP.method(req) == "OPTIONS" ? HTTP.Response(200, CORS_HEADERS) : handle(req)
+       return HTTP.method(req) == "OPTIONS" ? HTTP.Response(200, CORS_HEADERS) : handler(req)
    end
 end
 
-function errorhandler(handle)
+function errorhandler(handler)
     return function(req)
         try
-            result = handle(req)
-            return HTTP.Response(200, ["content-type" => "application/json; charset=utf-8"],
+            result = handler(req)
+            return HTTP.Response(200, [["content-type" => "application/json; charset=utf-8"]; CORS_HEADERS],
                 body=JSON.json(result))
         catch error
             errorcode = isa(error, ArgumentError) ? 400 : 500
-            return HTTP.Response(errorcode, ["content-type" => "text/plain; charset=utf-8"],
+            return HTTP.Response(errorcode, [["content-type" => "text/plain; charset=utf-8"]; CORS_HEADERS],
                 body = hasproperty(error, :msg) ? error.msg : "")
         end
     end
