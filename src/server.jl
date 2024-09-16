@@ -49,11 +49,11 @@ function errorhandler(handler)
     return function(req)
         try
             result = handler(req)
-            return HTTP.Response(200, [["content-type" => "application/json; charset=utf-8"]; CORS_HEADERS],
+            return HTTP.Response(200, [["content-type" => "application/json; charset=utf-8"]; CORS_RES_HEADERS],
                 body=JSON.json(result))
         catch error
             errorcode = isa(error, ArgumentError) ? 400 : 500
-            return HTTP.Response(errorcode, [["content-type" => "text/plain; charset=utf-8"]; CORS_HEADERS],
+            return HTTP.Response(errorcode, [["content-type" => "text/plain; charset=utf-8"]; CORS_RES_HEADERS],
                 body = hasproperty(error, :msg) ? error.msg : "")
         end
     end
