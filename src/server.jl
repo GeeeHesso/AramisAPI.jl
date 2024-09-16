@@ -1,10 +1,14 @@
 export start_server
 
 
-const CORS_HEADERS = [
+const CORS_OPT_HEADERS = [
     "Access-Control-Allow-Origin" => "*",
     "Access-Control-Allow-Headers" => "*",
     "Access-Control-Allow-Methods" => "POST, GET, OPTIONS"
+]
+
+const CORS_RES_HEADERS = [
+    "Access-Control-Allow-Origin" => "*",
 ]
 
 
@@ -37,7 +41,7 @@ end
 
 function corsmiddleware(handler)
    return function (req::HTTP.Request)
-       return HTTP.method(req) == "OPTIONS" ? HTTP.Response(200, CORS_HEADERS) : handler(req)
+       return HTTP.method(req) == "OPTIONS" ? HTTP.Response(200, [CORS_OPT_HEADERS]) : handler(req)
    end
 end
 
