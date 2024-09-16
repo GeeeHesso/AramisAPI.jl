@@ -36,16 +36,16 @@ function start_server(; port::Int64=8080, host::String="127.0.0.1") :: Nothing
 end
 
 function corsmiddleware(handler)
-  println("corsmiddleware")
-  println("HTTP.method(req)")
    return function (req::HTTP.Request)
+       println("corsmiddleware")
+       println("HTTP.method(req)")
        return HTTP.method(req) == "OPTIONS" ? HTTP.Response(200, CORS_HEADERS) : handler(req)
    end
 end
 
 function errorhandler(handler)
-  println("errorhandler")
     return function(req)
+        println("errorhandler")
         try
             result = handler(req)
             return HTTP.Response(200, [["content-type" => "application/json; charset=utf-8"]; CORS_HEADERS],
