@@ -38,7 +38,7 @@ end
 function corsmiddleware(handler)
    return function (req::HTTP.Request)
        println("corsmiddleware")
-       println("HTTP.method(req)")
+       println(HTTP.method(req))
        return HTTP.method(req) == "OPTIONS" ? HTTP.Response(200, CORS_HEADERS) : handler(req)
    end
 end
