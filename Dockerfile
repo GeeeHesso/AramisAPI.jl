@@ -9,7 +9,7 @@ RUN apt update && apt install -y curl && \
   ln -s /usr/local/julia/bin/julia /usr/bin/julia && \
   rm /tmp/install-julia.sh && apt remove -y curl
 
-RUN julia -e 'using Pkg; Pkg.add(url="https://github.com/GeeeHesso/AramisAPI.jl"); Pkg.precompile()'
+RUN julia -e 'using Pkg; Pkg.update(); Pkg.add(url="https://github.com/GeeeHesso/AramisAPI.jl"); Pkg.precompile()'
 
 EXPOSE 8080
 
