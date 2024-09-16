@@ -1,15 +1,7 @@
 export start_server
 
 
-const CORS_OPT_HEADERS = [
-    "Content-Type" => "text/html; charset=utf-8",
-    "Access-Control-Allow-Origin" => "*",
-    "Access-Control-Allow-Headers" => "*",
-    "Access-Control-Allow-Methods" => "POST, GET, OPTIONS"
-]
-
-const CORS_RES_HEADERS = [
-    "Content-Type" => "application/json; charset=utf-8",
+const CORS_HEADERS = [
     "Access-Control-Allow-Origin" => "*",
     "Access-Control-Allow-Headers" => "*",
     "Access-Control-Allow-Methods" => "POST, GET, OPTIONS"
@@ -36,7 +28,7 @@ function start_server(; port::Int64=8080, host::String="127.0.0.1") :: Nothing
     swagger_schema = YAML.load_file(joinpath([MODULE_FOLDER, "src", "swagger.yml"]))
     mergeschema(swagger_schema)
 
-    serve(port=port, host=host, middleware=[corsmiddleware, errorhandler], serialize=false)
+    serve(port=port, host=host, middleware=[errorhandler, corsmiddleware], serialize=false)
 #    serve(..., access_log=nothing) # to improve performance
 #    serveparallel(...)
 
@@ -45,9 +37,7 @@ end
 
 function corsmiddleware(handler)
    return function (req::HTTP.Request)
-       println("corsmiddleware")
-       println(HTTP.method(req))
-       return HTTP.method(req) == "OPTIONS" ? HTTP.Response(200, CORS_OPT_HEADERS) : handler(req)
+       return HTTP.method(req) == "OPTIONS" ? HTTP.Response(200, CORS_HEADERS) : handler(req)
    end
 end
 
@@ -55,13 +45,11 @@ function errorhandler(handler)
     return function(req)
         try
             result = handler(req)
-            println("Errorhandler response 200")
-            return HTTP.Response(200, [CORS_RES_HEADERS],
+            return HTTP.Response(200, [["content-type" => "application/json; charset=utf-8"]; CORS_HEADERS],
                 body=JSON.json(result))
         catch error
             errorcode = isa(error, ArgumentError) ? 400 : 500
-            println("Errorhandler response 400/500")
-            return HTTP.Response(errorcode, [CORS_RES_HEADERS],
+            return HTTP.Response(errorcode, [["content-type" => "text/plain; charset=utf-8"]; CORS_HEADERS],
                 body = hasproperty(error, :msg) ? error.msg : "")
         end
     end
