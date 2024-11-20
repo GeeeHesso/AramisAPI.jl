@@ -6,16 +6,16 @@ A Julia API for the Aramis project.
 
 ## Installation
 
-The machine learning algorithms running in the background require Python version 3.7 with the `pandas` and `scikit-learn` packages,
+The machine learning algorithms running in the background require Python version 3.6 with the `pandas` and `scikit-learn` packages,
 called from Julia through the `PyCall` package.
 
-Since Python 3.7 is presumably not the default version on your machine,
+Since Python 3.6 is presumably not the default version on your machine,
 you have to tell PyCall where to find it. In a Julia REPL, run
 ```julia
 import Pkg
 Pkg.add("PyCall")
 
-ENV["PYTHON"] = "<path to your python3.7 executable>"
+ENV["PYTHON"] = "<path to your python3.6 executable>"
 Pkg.build("PyCall")
 ```
 
@@ -37,7 +37,7 @@ or directly in the command line as
 julia setup.jl
 ```
 
-If successful, the installation script should output something like `Using Python 3.7.12 ...`.
+If successful, the installation script should output something like `Using Python 3.6.15 ...`.
 
 Once this is done, the Julia package *AramisAPI.jl* can be installed with
 ```julia

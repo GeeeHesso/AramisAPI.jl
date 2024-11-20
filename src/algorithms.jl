@@ -17,7 +17,7 @@ const GEN_HIST = DataDrop.retrieve_matrix(joinpath([MODULE_FOLDER, "data", "gen_
 
 function check_python_version()
     sys = pyimport("sys")
-    return sys.version_info[1:2] == (3, 7)
+    return sys.version_info[1:2] == (3, 6)
 end
 
 
