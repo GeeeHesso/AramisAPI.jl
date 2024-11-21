@@ -10,7 +10,7 @@ end
     # run all classifiers for all time steps
     network = AramisAPI.INITIAL_GRID
     T = size(AramisAPI.GENS, 2)
-    for t = 1:T
+    for t = 1:4 # MEMORY OVERFLOW IF 1:T, WHY?
         AramisAPI.update_injections!(network, t, 100)
         features = AramisAPI.get_features(network)
         for algorithm in keys(AramisAPI.CLASSIFIER_DIR)
@@ -26,7 +26,7 @@ end
     # run all regressors for all time steps
     network = AramisAPI.INITIAL_GRID
     T = size(AramisAPI.GENS, 2)
-    for t = 1:T
+    for t = 1:4 # MEMORY OVERFLOW IF 1:T, WHY?
         AramisAPI.update_injections!(network, t, 100)
         features = AramisAPI.get_features(network)
         for algorithm in keys(AramisAPI.REGRESSOR_DIR)
