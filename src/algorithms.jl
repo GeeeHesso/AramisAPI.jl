@@ -60,7 +60,7 @@ function run_regressor(algorithm::String, gen::String, features::PyObject, t::In
     x_context = features_series.drop(index=label_name)
     x_context = x_context.rename(index=Dict(name => "$(name)_t" for name in x_context.index))
     x_hist = get_history(gen, t)
-    x = pandas.concat([x_hist, x_context]).to_frame().T
+    x = pandas.concat([x_context, x_hist]).to_frame().T
 
     # perform regression
     x_scaled = scaler_x.transform(x)
