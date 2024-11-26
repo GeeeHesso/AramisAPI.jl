@@ -68,7 +68,7 @@ Download the file and run
 ```bash
 docker build -t aramis-api <path-to-the-docker-file>
 ```
-The image created in this way is about 2.7 GB. To run the container, use
+The image created in this way is about 5 GB. To run the container, use
 ```bash
 docker run -p 8080:8080 --restart=unless-stopped aramis-api
 ```
