@@ -7,12 +7,12 @@ Pkg.add(["JSON", "PyCall"])
 println("Creating conda environment 'aramis-api'...")
 using JSON
 conda_json = JSON.parse(
-    read(`conda create -yn aramis-api python=3.7 pandas scikit-learn --json`, String))
+    read(`conda create -yn aramis-api python=3.6 pandas scikit-learn --json`, String))
 @assert conda_json["success"]
 println("Environment created at ", conda_json["prefix"])
 
 # build PyCall
-ENV["PYTHON"] = joinpath([conda_json["prefix"], "bin", "python3.7"])
+ENV["PYTHON"] = joinpath([conda_json["prefix"], "bin", "python3.6"])
 Pkg.build("PyCall")
 
 # check that PyCall is using the correct Python version

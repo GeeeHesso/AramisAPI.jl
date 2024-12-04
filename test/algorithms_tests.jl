@@ -18,6 +18,7 @@ end
                 @test AramisAPI.run_classifier(algorithm, gen, features) || true
             end
         end
+        GC.gc() # clean garbage collector, otherwise memory overflow (why?)
     end
 end
 
@@ -34,6 +35,7 @@ end
                 @test AramisAPI.run_regressor(algorithm, gen, features, t) || true
             end
         end
+        GC.gc() # clean garbage collector, otherwise memory overflow (why?)
     end
 end
 

@@ -2,7 +2,7 @@ export start_server
 
 
 const CORS_HEADERS = [
-    "Access-Control-Allow-Origin" => "https://swissgrid.iigweb.hevs.ch",
+    "Access-Control-Allow-Origin" => "https://swisscybergrid.iigweb.hevs.ch",
     "Access-Control-Allow-Headers" => "*",
     "Access-Control-Allow-Methods" => "POST, GET, OPTIONS"
 ]
@@ -37,15 +37,12 @@ end
 
 function corsmiddleware(handler)
    return function (req::HTTP.Request)
-       println("corsmiddleware")
-       println(HTTP.method(req))
        return HTTP.method(req) == "OPTIONS" ? HTTP.Response(200, CORS_HEADERS) : handler(req)
    end
 end
 
 function errorhandler(handler)
     return function(req)
-        println("errorhandler")
         try
             result = handler(req)
             return HTTP.Response(200, [["content-type" => "application/json; charset=utf-8"]; CORS_HEADERS],
