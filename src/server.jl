@@ -1,14 +1,14 @@
 export start_server
 
 
-const CORS_HEADERS = [
-    "Access-Control-Allow-Origin" => "https://swisscybergrid.iigweb.hevs.ch",
+CORS_HEADERS = [
+    "Access-Control-Allow-Origin" => "*",
     "Access-Control-Allow-Headers" => "*",
     "Access-Control-Allow-Methods" => "POST, GET, OPTIONS"
 ]
 
 
-function start_server(; port::Int64=8080, host::String="127.0.0.1") :: Nothing
+function start_server(; port::Int64=8080, host::String="127.0.0.1", frontend_url::String="") :: Nothing
 
     # Return the initial grid to be shown at application startup
     @get "/initial_network" (req::HTTP.Request) -> initial_network()
@@ -27,6 +27,14 @@ function start_server(; port::Int64=8080, host::String="127.0.0.1") :: Nothing
 
     swagger_schema = YAML.load_file(joinpath([MODULE_FOLDER, "src", "swagger.yml"]))
     mergeschema(swagger_schema)
+
+    if !isempty(frontend_url)
+        CORS_HEADERS = [
+            "Access-Control-Allow-Origin" => frontend_url,
+            "Access-Control-Allow-Headers" => "*",
+            "Access-Control-Allow-Methods" => "POST, GET, OPTIONS"
+        ]
+    end
 
     serve(port=port, host=host, middleware=[errorhandler, corsmiddleware], serialize=false)
 #    serve(..., access_log=nothing) # to improve performance
