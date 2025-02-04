@@ -2,8 +2,6 @@ FROM python:3.6-bullseye
 
 WORKDIR /app
 
-COPY . .
-
 RUN python -m pip install --upgrade pip && python -m pip install pandas scikit-learn
 
 RUN apt update && apt install -y curl && \
@@ -13,7 +11,7 @@ RUN apt update && apt install -y curl && \
   ln -s /usr/local/julia/bin/julia /usr/bin/julia && \
   rm /tmp/install-julia.sh && apt remove -y curl
 
-RUN julia -e 'using Pkg; Pkg.add(path="."); Pkg.precompile()'
+RUN julia -e 'using Pkg; Pkg.add(path="https://github.com/GeeeHesso/AramisAPI.jl"); Pkg.precompile()'
 
 EXPOSE 8080
 
