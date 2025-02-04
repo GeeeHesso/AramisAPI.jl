@@ -1,15 +1,17 @@
 
-const CLASSIFIER_DIR = Dict(
+const ALGORITHM_DIR = Dict(
     "NBC"   => "nb",
     "KNNC"  => "knn",
     "RFC"   => "rf",
     "SVC"   => "svc",
     "GBC"   => "gbc",
-    "MLPC"  => "mlpc"
-)
-const REGRESSOR_DIR = Dict(
+    "MLPC"  => "mlpc",
     "MLPR"  => "mlpr"
 )
+
+const SCALERS = ["MLPC", "MLPR"]
+const REGRESSORS = ["MLPR"]
+
 const FEATURE_NAMES = CSV.read(joinpath([MODULE_FOLDER, "data", "gen_names.csv"]),
     CSV.Tables.matrix, header=false)[:, 1]
 const GEN_HIST = DataDrop.retrieve_matrix(joinpath([MODULE_FOLDER, "data", "gen_hist.h5"]))
@@ -22,52 +24,49 @@ end
 
 
 function run_algorithm(algorithm::String, gen::String, features::PyObject, t::Int) :: Bool
-    return algorithm in keys(CLASSIFIER_DIR) ?
-        run_classifier(algorithm, gen, features) :
-        run_regressor(algorithm, gen, features, t)
-end
 
-
-function run_classifier(algorithm::String, gen::String, features::PyObject) :: Bool
-    dir = joinpath([MODULE_FOLDER, "algorithms", CLASSIFIER_DIR[algorithm]])
+    # load model
+    dir = joinpath([MODULE_FOLDER, "algorithms", ALGORITHM_DIR[algorithm]])
     estimator = pickle.load(pybuiltin("open")(joinpath([dir, "estimator_$gen.p"]), "rb"))
-    if algorithm == "MLPC"
-        scaler = pickle.load(pybuiltin("open")(joinpath([dir, "scaler_$gen.p"]), "rb"))
-        features = scaler.transform(features)
-    end
-    return estimator.predict(features)[1]
-end
-
-
-function run_regressor(algorithm::String, gen::String, features::PyObject, t::Int) :: Bool
-    # load regressor and scaler
-    dir = joinpath([MODULE_FOLDER, "algorithms", REGRESSOR_DIR[algorithm]])
-    estimator = pickle.load(pybuiltin("open")(joinpath([dir, "estimator_$gen.p"]), "rb"))
-    scaler_x = pickle.load(pybuiltin("open")(joinpath([dir, "scaler_x_$gen.p"]), "rb"))
-    scaler_y = pickle.load(pybuiltin("open")(joinpath([dir, "scaler_y_$gen.p"]), "rb"))
-
-    # load threshold value
-    threshold_df = pickle.load(pybuiltin("open")(joinpath([dir, "threshold_$gen.p"]), "rb"))
-    threshold = threshold_df."best_threshold".get(0)
 
     # identify generator name
     label_id = findfirst(x -> string(x) == gen, GEN_IDS)
     label_name = FEATURE_NAMES[label_id]
 
     # prepare label and features
-    features_series = features.T.squeeze()
-    y = features_series.get(label_name)
-    x_context = features_series.drop(index=label_name)
+    x_context = features.T.squeeze()
+    if algorithm in REGRESSORS
+        y = x_context.get(label_name)
+        x_context = x_context.drop(index=label_name)
+    end
     x_context = x_context.rename(index=Dict(name => "$(name)_t" for name in x_context.index))
     x_hist = get_history(gen, t)
     x = pandas.concat([x_context, x_hist]).to_frame().T
 
-    # perform regression
-    x_scaled = scaler_x.transform(x)
-    y_scaled = pandas.DataFrame([estimator.predict(x_scaled)])
-    y_pred = scaler_y.inverse_transform(y_scaled)[1]
+    # scale inputs
+    if algorithm in SCALERS
+        scaler_x = pickle.load(pybuiltin("open")(joinpath([dir, "scaler_x_$gen.p"]), "rb"))
+        x = scaler_x.transform(x)
+    end
 
-    return abs(y - y_pred) > threshold
+    # inference
+    y_pred = estimator.predict(x)
+
+    if algorithm in REGRESSORS
+        # load threshold value
+        threshold_df = pickle.load(pybuiltin("open")(joinpath([dir, "threshold_$gen.p"]), "rb"))
+        threshold = threshold_df."best_threshold".get(0)
+
+        # scale prediction
+        if algorithm in SCALERS
+            scaler_y = pickle.load(pybuiltin("open")(joinpath([dir, "scaler_y_$gen.p"]), "rb"))
+            y_pred = scaler_y.inverse_transform(pandas.DataFrame([y_pred]))
+        end
+
+        return abs(y - y_pred[1]) > threshold
+    end
+
+    return y_pred[1]
 end
 
 

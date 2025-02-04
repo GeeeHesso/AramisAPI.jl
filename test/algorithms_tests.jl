@@ -6,33 +6,16 @@ function check_algorithm_results(result, algorithms)
 end
 
 
-@testset "Algorithms: run classifier" begin
+@testset "Algorithms: run algorithm" begin
     # run all classifiers for all time steps
     network = AramisAPI.INITIAL_GRID
     T = size(AramisAPI.GENS, 2)
     for t = 1:T
         AramisAPI.update_injections!(network, t, 100)
         features = AramisAPI.get_features(network)
-        for algorithm in keys(AramisAPI.CLASSIFIER_DIR)
+        for algorithm in keys(AramisAPI.ALGORITHM_DIR)
             for gen in AramisAPI.ATTACKABLE_GENS
-                @test AramisAPI.run_classifier(algorithm, gen, features) || true
-            end
-        end
-        GC.gc() # clean garbage collector, otherwise memory overflow (why?)
-    end
-end
-
-
-@testset "Algorithms: run regressor" begin
-    # run all regressors for all time steps
-    network = AramisAPI.INITIAL_GRID
-    T = size(AramisAPI.GENS, 2)
-    for t = 1:T
-        AramisAPI.update_injections!(network, t, 100)
-        features = AramisAPI.get_features(network)
-        for algorithm in keys(AramisAPI.REGRESSOR_DIR)
-            for gen in AramisAPI.ATTACKABLE_GENS
-                @test AramisAPI.run_regressor(algorithm, gen, features, t) || true
+                @test AramisAPI.run_algorithm(algorithm, gen, features, t) || true
             end
         end
         GC.gc() # clean garbage collector, otherwise memory overflow (why?)
