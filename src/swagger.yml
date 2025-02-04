@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: Aramis API
-  version: 1.1.1
+  version: 1.1.2
   description: A Julia API for the Aramis project
 paths:
   /initial_network:
