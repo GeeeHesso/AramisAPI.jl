@@ -17,4 +17,4 @@ RUN julia -e 'using Pkg; Pkg.add(path="."); Pkg.precompile()'
 
 EXPOSE 8080
 
-CMD ["julia", "-e", "using AramisAPI; start_server(frontend_url=\"https://swisscybergrid.iigweb.hevs.ch/\")"]
+CMD ["julia", "-e", "using AramisAPI; start_server(host=\"0.0.0.0\", frontend_url=\"https://swisscybergrid.iigweb.hevs.ch/\")"]
